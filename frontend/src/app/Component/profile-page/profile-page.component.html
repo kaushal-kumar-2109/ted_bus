@@ -1,0 +1,416 @@
+<!-- Profile Page - Fully Featured -->
+<div class="profile-page min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors duration-200">
+
+  <!-- Top Banner -->
+  <div class="hidden md:block bg-gradient-to-r from-red-700 to-red-500 py-6">
+    <div class="max-w-6xl mx-auto px-6 flex items-center gap-5">
+      <div class="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white text-xl font-black border-2 border-white/30">
+        {{ currentname ? currentname.charAt(0).toUpperCase() : 'U' }}
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h2 class="text-white font-bold text-lg m-0">{{ currentname || 'User' }}</h2>
+          <span *ngIf="isVerified" class="bg-white/20 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+            <i class="fa-solid fa-circle-check text-green-300 text-xs"></i> Verified
+          </span>
+        </div>
+        <p class="text-red-100 text-xs m-0 mt-0.5">{{ currentemail || 'user@redbus.in' }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Tab Strip -->
+  <div class="md:hidden bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 sticky top-[52px] z-10">
+    <div class="flex overflow-x-auto scrollbar-none gap-2 p-3">
+      <button (click)="handlelistitemclick('trips')"
+        [class]="selecteditem === 'trips' ? 'bg-red-600 text-white shadow-md' : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-300 border border-gray-200 dark:border-slate-700'"
+        class="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-150">
+        <i class="fa-solid fa-route"></i> My Trips
+      </button>
+      <button (click)="handlelistitemclick('profile')"
+        [class]="selecteditem === 'profile' ? 'bg-red-600 text-white shadow-md' : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-300 border border-gray-200 dark:border-slate-700'"
+        class="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-150">
+        <i class="fa-regular fa-user"></i> My Profile
+      </button>
+      <button (click)="handlelistitemclick('notifications')"
+        [class]="selecteditem === 'notifications' ? 'bg-red-600 text-white shadow-md' : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-300 border border-gray-200 dark:border-slate-700'"
+        class="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-150">
+        <i class="fa-solid fa-bell"></i> Notifications
+      </button>
+      <button (click)="handlelistitemclick('settings')"
+        [class]="selecteditem === 'settings' ? 'bg-red-600 text-white shadow-md' : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-300 border border-gray-200 dark:border-slate-700'"
+        class="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-150">
+        <i class="fa-solid fa-gear"></i> Settings
+      </button>
+      <button (click)="handlelistitemclick('wallet')"
+        [class]="selecteditem === 'wallet' ? 'bg-red-600 text-white shadow-md' : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-300 border border-gray-200 dark:border-slate-700'"
+        class="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-150">
+        <i class="fa-solid fa-wallet"></i> Wallet
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Grid Layout -->
+  <div class="max-w-6xl mx-auto px-4 md:px-6 py-6 grid grid-cols-1 md:grid-cols-[260px_1fr] gap-6">
+
+    <!-- Left Sidebar (Desktop Only) -->
+    <aside class="hidden md:block">
+      <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden sticky top-20">
+        <!-- User Info -->
+        <div class="p-5 border-b border-gray-100 dark:border-slate-700 flex items-center gap-3">
+          <div class="w-11 h-11 rounded-full bg-red-100 dark:bg-red-950/30 flex items-center justify-center text-red-600 font-black text-base">
+            {{ currentname ? currentname.charAt(0).toUpperCase() : 'U' }}
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-1.5">
+              <p class="font-bold text-sm text-slate-800 dark:text-white m-0 truncate">{{ currentname || 'User' }}</p>
+              <i *ngIf="isVerified" class="fa-solid fa-circle-check text-green-500 text-xs flex-shrink-0"></i>
+            </div>
+            <p class="text-[11px] text-gray-400 dark:text-slate-500 m-0 truncate">{{ currentemail || '' }}</p>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <ul class="sidebar-nav py-2">
+          <li class="sidebar-nav-item" [class.active]="selecteditem === 'trips'" (click)="handlelistitemclick('trips')">
+            <i class="material-icons sidebar-icon" [style.color]="selecteditem === 'trips' ? '#d84e55' : '#9ca3af'">location_on</i>
+            <span>My Trips</span>
+          </li>
+          <li class="sidebar-nav-item" [class.active]="selecteditem === 'profile'" (click)="handlelistitemclick('profile')">
+            <i class="material-icons sidebar-icon" [style.color]="selecteditem === 'profile' ? '#d84e55' : '#9ca3af'">person</i>
+            <span>My Profile</span>
+          </li>
+          <li class="sidebar-nav-item" [class.active]="selecteditem === 'notifications'" (click)="handlelistitemclick('notifications')">
+            <i class="material-icons sidebar-icon" [style.color]="selecteditem === 'notifications' ? '#d84e55' : '#9ca3af'">notifications</i>
+            <span>Notifications</span>
+            <span *ngIf="notificationHistory.length > 0" class="ml-auto bg-red-500 text-white text-[9px] font-bold rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
+              {{ notificationHistory.length }}
+            </span>
+          </li>
+          <li class="sidebar-nav-item" [class.active]="selecteditem === 'settings'" (click)="handlelistitemclick('settings')">
+            <i class="material-icons sidebar-icon" [style.color]="selecteditem === 'settings' ? '#d84e55' : '#9ca3af'">settings</i>
+            <span>Settings</span>
+          </li>
+          <li class="sidebar-nav-item" [class.active]="selecteditem === 'wallet'" (click)="handlelistitemclick('wallet')">
+            <i class="material-icons sidebar-icon" [style.color]="selecteditem === 'wallet' ? '#d84e55' : '#9ca3af'">account_balance_wallet</i>
+            <span>Wallet</span>
+          </li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Right Content Area -->
+    <main class="min-w-0 animate-fadeIn">
+
+      <!-- ============ TRIPS TAB ============ -->
+      <div *ngIf="selecteditem === 'trips'" class="animate-fadeIn">
+        <app-my-trip [booking]="mytrip"></app-my-trip>
+      </div>
+
+      <!-- ============ PROFILE TAB ============ -->
+      <div *ngIf="selecteditem === 'profile'" class="animate-fadeIn">
+        <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4">My Profile</h3>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm p-6">
+          <!-- Verification Badge Banner -->
+          <div *ngIf="isVerified" class="mb-6 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-xl p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center flex-shrink-0">
+              <i class="fa-solid fa-circle-check text-green-600 dark:text-green-400 text-base"></i>
+            </div>
+            <div>
+              <p class="text-sm font-bold text-green-700 dark:text-green-400 m-0">Verified Account</p>
+              <p class="text-xs text-green-600 dark:text-green-500 m-0">You can post content, write reviews, and participate in the community.</p>
+            </div>
+          </div>
+          <div *ngIf="!isVerified" class="mb-6 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-amber-100 dark:bg-amber-900/50 flex items-center justify-center flex-shrink-0">
+              <i class="fa-solid fa-triangle-exclamation text-amber-600 dark:text-amber-400 text-base"></i>
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-bold text-amber-700 dark:text-amber-400 m-0">Account Pending Verification</p>
+              <p class="text-xs text-amber-600 dark:text-amber-500 m-0">Complete a booking journey to unlock posting, reviews, and community access.</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+              <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-slate-500 mb-1">
+                <i class="fa-regular fa-user mr-1"></i> Full Name
+              </p>
+              <p class="text-sm font-semibold text-slate-800 dark:text-white m-0">{{ currentname || 'User' }}</p>
+            </div>
+            <div>
+              <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-slate-500 mb-1">
+                <i class="fa-regular fa-envelope mr-1"></i> Email
+              </p>
+              <p class="text-sm font-semibold text-slate-800 dark:text-white m-0">{{ currentemail || '-' }}</p>
+            </div>
+            <div>
+              <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-slate-500 mb-1">
+                <i class="fa-solid fa-shield-check mr-1"></i> Account Status
+              </p>
+              <div class="flex items-center gap-2">
+                <span [class]="isVerified ? 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-400' : 'bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-400'"
+                  class="text-xs font-bold px-2 py-1 rounded-lg">
+                  {{ isVerified ? '✓ Verified' : '⏳ Pending' }}
+                </span>
+              </div>
+            </div>
+            <div>
+              <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-slate-500 mb-1">
+                <i class="fa-solid fa-ticket mr-1"></i> Total Journeys
+              </p>
+              <p class="text-sm font-semibold text-slate-800 dark:text-white m-0">{{ mytrip?.length || 0 }} bookings</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ NOTIFICATIONS TAB ============ -->
+      <div *ngIf="selecteditem === 'notifications'" class="animate-fadeIn">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-bold text-slate-800 dark:text-white m-0">Notifications</h3>
+          <button *ngIf="notificationHistory.length > 0"
+            class="text-xs text-red-600 dark:text-red-400 font-semibold hover:underline cursor-pointer bg-transparent border-none"
+            (click)="notificationHistory = []">Clear All</button>
+        </div>
+
+        <!-- Notification Preferences -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm p-6 mb-5">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h4 class="text-sm font-bold text-slate-800 dark:text-white m-0">Notification Preferences</h4>
+              <p class="text-xs text-gray-400 dark:text-slate-500 m-0 mt-0.5">Manage how and when you receive alerts.</p>
+            </div>
+            <button (click)="saveNotificationPreferences()"
+              class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-colors duration-150 border-none cursor-pointer shadow-sm">
+              Save
+            </button>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Email Notifications Toggle -->
+            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-900 rounded-xl border border-gray-100 dark:border-slate-700">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center flex-shrink-0">
+                  <i class="fa-regular fa-envelope text-blue-600 dark:text-blue-400 text-sm"></i>
+                </div>
+                <div>
+                  <p class="text-xs font-bold text-slate-800 dark:text-white m-0">Email Notifications</p>
+                  <p class="text-[10px] text-gray-400 dark:text-slate-500 m-0">Booking & travel updates via email</p>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" [(ngModel)]="emailNotifications" class="sr-only peer">
+                <div class="w-10 h-5 bg-gray-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-600"></div>
+              </label>
+            </div>
+            <!-- Booking Notifications Toggle -->
+            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-900 rounded-xl border border-gray-100 dark:border-slate-700">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/50 flex items-center justify-center flex-shrink-0">
+                  <i class="fa-solid fa-ticket text-green-600 dark:text-green-400 text-sm"></i>
+                </div>
+                <div>
+                  <p class="text-xs font-bold text-slate-800 dark:text-white m-0">Booking Alerts</p>
+                  <p class="text-[10px] text-gray-400 dark:text-slate-500 m-0">Confirmations, reminders & cancellations</p>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" [(ngModel)]="bookingNotifications" class="sr-only peer">
+                <div class="w-10 h-5 bg-gray-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-600"></div>
+              </label>
+            </div>
+            <!-- Promotional Notifications Toggle -->
+            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-900 rounded-xl border border-gray-100 dark:border-slate-700">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center flex-shrink-0">
+                  <i class="fa-solid fa-tags text-purple-600 dark:text-purple-400 text-sm"></i>
+                </div>
+                <div>
+                  <p class="text-xs font-bold text-slate-800 dark:text-white m-0">Offers & Promotions</p>
+                  <p class="text-[10px] text-gray-400 dark:text-slate-500 m-0">Exclusive deals, discounts & offers</p>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" [(ngModel)]="promotionalNotifications" class="sr-only peer">
+                <div class="w-10 h-5 bg-gray-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-600"></div>
+              </label>
+            </div>
+            <!-- Social Notifications Toggle -->
+            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-900 rounded-xl border border-gray-100 dark:border-slate-700">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/50 flex items-center justify-center flex-shrink-0">
+                  <i class="fa-solid fa-users text-amber-600 dark:text-amber-400 text-sm"></i>
+                </div>
+                <div>
+                  <p class="text-xs font-bold text-slate-800 dark:text-white m-0">Community & Social</p>
+                  <p class="text-[10px] text-gray-400 dark:text-slate-500 m-0">Comments, likes & follower updates</p>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" [(ngModel)]="socialNotifications" class="sr-only peer">
+                <div class="w-10 h-5 bg-gray-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-600"></div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notification History -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm p-6">
+          <h4 class="text-sm font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-clock-rotate-left text-gray-400 dark:text-slate-500"></i>
+            Notification History
+          </h4>
+          <!-- Loading spinner -->
+          <div *ngIf="loadingNotifications" class="flex justify-center py-8">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
+          </div>
+          <!-- Empty state -->
+          <div *ngIf="!loadingNotifications && notificationHistory.length === 0" class="text-center py-10">
+            <div class="w-16 h-16 bg-gray-100 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i class="fa-regular fa-bell text-2xl text-gray-400 dark:text-slate-500"></i>
+            </div>
+            <p class="text-sm font-semibold text-gray-500 dark:text-slate-400 m-0">No notifications yet</p>
+            <p class="text-xs text-gray-400 dark:text-slate-500 mt-1">Your booking confirmations, reminders and alerts will appear here.</p>
+          </div>
+          <!-- Notification list -->
+          <div *ngIf="!loadingNotifications && notificationHistory.length > 0" class="flex flex-col gap-3">
+            <div *ngFor="let notification of notificationHistory"
+              [class]="notification.isRead ? 'opacity-60' : ''"
+              class="flex items-start gap-3 p-4 rounded-xl bg-gray-50 dark:bg-slate-900 border border-gray-100 dark:border-slate-700 group transition-all duration-150 hover:border-gray-200 dark:hover:border-slate-600">
+              <div class="w-9 h-9 rounded-full bg-red-100 dark:bg-red-900/50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <i class="fa-solid fa-bell text-red-600 dark:text-red-400 text-sm"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-start justify-between gap-2">
+                  <p class="text-xs font-bold text-slate-800 dark:text-white m-0">{{ notification.title || notification.type || 'Notification' }}</p>
+                  <span *ngIf="!notification.isRead" class="flex-shrink-0 w-2 h-2 rounded-full bg-red-500 mt-1"></span>
+                </div>
+                <p class="text-[11px] text-gray-500 dark:text-slate-400 m-0 mt-0.5 line-clamp-2">{{ notification.message || notification.body || 'You have a new notification.' }}</p>
+                <p class="text-[10px] text-gray-400 dark:text-slate-600 m-0 mt-1">{{ notification.createdAt | date:'MMM d, y h:mm a' }}</p>
+              </div>
+              <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                <button *ngIf="!notification.isRead" (click)="markNotificationAsRead(notification._id)"
+                  class="text-[10px] text-blue-500 hover:text-blue-700 bg-transparent border-none cursor-pointer font-semibold px-1">
+                  Mark read
+                </button>
+                <button (click)="deleteNotificationFromHistory(notification._id)"
+                  class="text-[10px] text-gray-400 hover:text-red-500 bg-transparent border-none cursor-pointer px-1">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ SETTINGS TAB ============ -->
+      <div *ngIf="selecteditem === 'settings'" class="animate-fadeIn">
+        <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4">Settings</h3>
+        <div class="flex flex-col gap-4">
+
+          <!-- Theme Card -->
+          <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm p-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center flex-shrink-0">
+                  <i class="fa-solid" [class.fa-moon]="!theme.isDarkMode()" [class.fa-sun]="theme.isDarkMode()" class="text-slate-600 dark:text-slate-300"></i>
+                </div>
+                <div>
+                  <h4 class="text-sm font-bold text-slate-800 dark:text-white m-0">Theme Appearance</h4>
+                  <p class="text-xs text-gray-400 dark:text-slate-500 m-0 mt-0.5">
+                    Currently in <strong>{{ theme.isDarkMode() ? 'Dark' : 'Light' }} Mode</strong>. Changes persist across sessions.
+                  </p>
+                </div>
+              </div>
+              <button (click)="toggleTheme()"
+                class="flex items-center gap-2.5 px-5 py-2.5 rounded-xl transition-all duration-200 font-bold text-xs border cursor-pointer flex-shrink-0"
+                [class]="theme.isDarkMode() ? 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-400 hover:bg-amber-100' : 'bg-slate-100 dark:bg-slate-700 border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-200'">
+                <i class="fa-solid" [class.fa-sun]="theme.isDarkMode()" [class.fa-moon]="!theme.isDarkMode()"></i>
+                {{ theme.isDarkMode() ? 'Switch to Light' : 'Switch to Dark' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Language Card -->
+          <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm p-6">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-globe text-blue-600 dark:text-blue-400"></i>
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-slate-800 dark:text-white m-0">Language & Localization</h4>
+                <p class="text-xs text-gray-400 dark:text-slate-500 m-0 mt-0.5">Instantly switch UI language without page reload. Saved locally.</p>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-2 max-w-xs">
+              <button (click)="changeLanguage('en')"
+                [class]="lang.getCurrentLanguage() === 'en' ? 'bg-red-600 text-white border-red-600 shadow-sm' : 'bg-transparent text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-700 hover:border-red-400'"
+                class="py-2.5 text-xs font-bold rounded-xl border transition-all duration-150 cursor-pointer">
+                🇬🇧 English
+              </button>
+              <button (click)="changeLanguage('hi')"
+                [class]="lang.getCurrentLanguage() === 'hi' ? 'bg-red-600 text-white border-red-600 shadow-sm' : 'bg-transparent text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-700 hover:border-red-400'"
+                class="py-2.5 text-xs font-bold rounded-xl border transition-all duration-150 cursor-pointer">
+                🇮🇳 हिंदी
+              </button>
+              <button (click)="changeLanguage('es')"
+                [class]="lang.getCurrentLanguage() === 'es' ? 'bg-red-600 text-white border-red-600 shadow-sm' : 'bg-transparent text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-700 hover:border-red-400'"
+                class="py-2.5 text-xs font-bold rounded-xl border transition-all duration-150 cursor-pointer">
+                🇪🇸 Español
+              </button>
+            </div>
+            <p class="text-[10px] text-gray-400 dark:text-slate-600 mt-3 m-0">
+              Active: <strong class="text-red-500">{{ lang.getCurrentLanguage() === 'en' ? 'English' : lang.getCurrentLanguage() === 'hi' ? 'Hindi' : 'Español' }}</strong>
+            </p>
+          </div>
+
+          <!-- Account Verification Status Card -->
+          <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm p-6">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-900/50 flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-shield-check text-green-600 dark:text-green-400"></i>
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-slate-800 dark:text-white m-0">Account Verification</h4>
+                <p class="text-xs text-gray-400 dark:text-slate-500 m-0 mt-0.5">Verified accounts can post reviews, stories and join the community.</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-3 p-3 rounded-xl" [class]="isVerified ? 'bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800' : 'bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800'">
+              <i class="fa-solid text-sm" [class.fa-circle-check]="isVerified" [class.text-green-600]="isVerified" [class.fa-circle-exclamation]="!isVerified" [class.text-amber-600]="!isVerified"></i>
+              <div>
+                <p class="text-xs font-bold m-0" [class]="isVerified ? 'text-green-700 dark:text-green-400' : 'text-amber-700 dark:text-amber-400'">
+                  {{ isVerified ? 'Your account is fully verified' : 'Account not yet verified' }}
+                </p>
+                <p class="text-[10px] m-0 mt-0.5" [class]="isVerified ? 'text-green-600 dark:text-green-500' : 'text-amber-600 dark:text-amber-500'">
+                  {{ isVerified ? 'You have full access to all platform features.' : 'Complete a journey booking to get verified automatically.' }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ WALLET TAB ============ -->
+      <div *ngIf="selecteditem === 'wallet'" class="animate-fadeIn">
+        <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4">My Wallet</h3>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm p-10 text-center">
+          <div class="w-20 h-20 bg-gradient-to-br from-red-100 to-orange-100 dark:from-red-950/30 dark:to-orange-950/30 rounded-2xl flex items-center justify-center mx-auto mb-5">
+            <i class="fa-solid fa-wallet text-3xl text-red-500"></i>
+          </div>
+          <h4 class="text-base font-bold text-slate-800 dark:text-white m-0">Wallet Coming Soon</h4>
+          <p class="text-xs text-gray-400 dark:text-slate-500 mt-2 max-w-xs mx-auto">We're building a seamless wallet experience with cashback, refunds, and quick payments. Stay tuned!</p>
+          <div class="flex justify-center gap-3 mt-5">
+            <div class="bg-gray-50 dark:bg-slate-900 rounded-xl px-4 py-3 text-center border border-gray-100 dark:border-slate-700">
+              <p class="text-lg font-black text-red-600 m-0">₹0</p>
+              <p class="text-[10px] text-gray-400 dark:text-slate-500 m-0 mt-0.5">Balance</p>
+            </div>
+            <div class="bg-gray-50 dark:bg-slate-900 rounded-xl px-4 py-3 text-center border border-gray-100 dark:border-slate-700">
+              <p class="text-lg font-black text-green-600 m-0">₹0</p>
+              <p class="text-[10px] text-gray-400 dark:text-slate-500 m-0 mt-0.5">Cashback</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

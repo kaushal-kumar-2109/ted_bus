@@ -1,0 +1,76 @@
+/* Profile Page - Redesigned CSS */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.profile-page {
+  min-height: calc(100vh - 60px);
+}
+
+/* Sidebar Navigation */
+.sidebar-nav {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+}
+
+.sidebar-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  border-left: 3px solid transparent;
+  transition: all 0.15s ease;
+}
+
+.sidebar-nav-item:hover {
+  background-color: #f8fafc;
+}
+
+html.dark .sidebar-nav-item:hover {
+  background-color: #1e293b;
+}
+
+.sidebar-nav-item.active {
+  background-color: rgba(216, 78, 85, 0.08);
+  border-left-color: #d84e55;
+  color: #d84e55;
+  font-weight: 700;
+}
+
+html.dark .sidebar-nav-item.active {
+  background-color: rgba(216, 78, 85, 0.12);
+}
+
+html.dark .sidebar-nav-item {
+  color: #94a3b8;
+}
+
+html.dark .sidebar-nav-item.active {
+  color: #d84e55;
+}
+
+.sidebar-icon {
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+}
+
+/* Mobile tab scrollbar hide */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}

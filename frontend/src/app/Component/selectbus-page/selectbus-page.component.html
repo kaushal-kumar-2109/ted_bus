@@ -1,0 +1,37 @@
+<div class="selectbus min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-200">
+    <app-header></app-header>
+    
+    <!-- Mobile Filter Bar (Scrolls with the screen) -->
+    <div class="md:hidden flex items-center justify-between border-b border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-3 shadow-sm transition-colors duration-150">
+        <button (click)="toggleFilter()" class="flex items-center justify-center gap-2 w-full py-1 text-sm font-semibold text-slate-700 dark:text-slate-300 focus:outline-none">
+            <i class="fa-solid fa-filter text-red-600 text-base"></i>
+            <span>{{ lang.text['filters'] }}</span>
+        </button>
+    </div>
+
+    <div class="SelectBUS_MAINCONTENT max-w-[1400px] mx-auto">
+        <!-- Sidebar Filter (Desktop) or Drawer (Mobile) -->
+        <div [class.mobile-open]="isFilterOpen" class="sidebar-wrapper">
+            <!-- Backdrop for Mobile -->
+            <div *ngIf="isFilterOpen" class="drawer-backdrop md:hidden" (click)="toggleFilter()"></div>
+            
+            <!-- Sidebar Drawer Content -->
+            <div class="sidebar-content bg-white dark:bg-slate-900 md:bg-transparent border-r md:border-r-0 border-gray-200 dark:border-slate-800 transition-colors duration-150">
+                <!-- Mobile Header for Drawer -->
+                <div class="md:hidden flex items-center justify-between px-4 py-4 border-b border-gray-100 dark:border-slate-800/80">
+                    <h3 class="text-base font-bold m-0 text-slate-800 dark:text-white">Filters</h3>
+                    <button (click)="toggleFilter()" class="text-gray-400 hover:text-red-600 focus:outline-none">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+                
+                <app-left></app-left>
+            </div>
+        </div>
+        
+        <!-- Right Results Panel -->
+        <div class="results-wrapper p-4 md:py-6 md:pr-6 md:pl-0">
+            <app-right></app-right>
+        </div>
+    </div>
+</div>

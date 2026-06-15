@@ -1,0 +1,193 @@
+<div [class.booking-active]="isBookingOpen" class="bus-box bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-4 transition-colors duration-150 relative">
+    <div class="busBoxSection1 grid grid-cols-2 md:flex md:flex-row md:justify-between md:items-center gap-y-4 gap-x-2">
+        <!-- 1. Operator Info -->
+        <div class="busBoxSection11 text-slate-800 dark:text-slate-200 col-span-1">
+            <div class="font-bold text-sm md:text-base">{{operatorname}}</div>
+            <div class="text-xs text-gray-500 dark:text-slate-400 capitalize">{{bustypename}}</div>
+        </div>
+
+        <!-- 2. Fare Info -->
+        <div class="busBoxSection16 text-slate-800 dark:text-slate-200 col-span-1 text-right md:text-left justify-self-end md:justify-self-auto">
+            <div class="flex items-baseline justify-end md:justify-start gap-0.5">
+                <div class="text-[10px] font-bold">INR</div>
+                <div class="font-bold text-sm md:text-base text-red-650">{{seatprivce}}</div>
+            </div>
+            <div class="text-[10px] text-red-650 font-semibold flex items-center justify-end md:justify-start gap-0.5">
+                <i class="material-icons text-xs">local_offer</i>
+                <span>reDeal applied</span>
+            </div>
+        </div>
+
+        <!-- 3. Journey Details Row (Full width on mobile, inline flex items on desktop) -->
+        <div class="col-span-2 md:contents grid grid-cols-3 items-center py-2 md:py-0 border-y md:border-y-0 border-gray-100 dark:border-slate-800/60 my-1 md:my-0">
+            <!-- Departure -->
+            <div class="busBoxSection12 text-slate-800 dark:text-slate-200 text-left">
+                <div class="font-bold text-sm md:text-base">
+                    {{busdeparturetime}}:00
+                </div>
+                <div class="text-xs text-gray-500 dark:text-slate-400 md:truncate">{{routedetails.departureLocation.name}}</div>
+            </div>
+            
+            <!-- Duration -->
+            <div class="busBoxSection13 text-slate-500 dark:text-slate-400 text-xs text-center flex flex-col items-center justify-center">
+                <span class="text-[10px] md:text-xs font-medium">{{routedetails.duration}} h</span>
+                <div class="w-12 h-[1px] bg-gray-300 dark:bg-slate-700 my-0.5 relative">
+                    <div class="w-1.5 h-1.5 rounded-full bg-red-500 absolute -top-[3px] left-1/2 -translate-x-1/2"></div>
+                </div>
+            </div>
+            
+            <!-- Arrival -->
+            <div class="busBoxSection14 text-slate-800 dark:text-slate-200 text-right">
+                <div class="font-bold text-sm md:text-base">
+                    {{busarrivaltime}}:00
+                </div>
+                <div class="text-xs text-gray-500 dark:text-slate-400 md:truncate">
+                    {{routedetails.arrivalLocation.name}}
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Ratings -->
+        <div class="busBoxSection15 flex gap-2 cursor-pointer bg-green-50 dark:bg-green-950/20 px-2.5 py-1 rounded-lg hover:opacity-90 transition col-span-1 justify-self-start md:justify-self-auto items-center" (click)="openReviewsModal()">
+            <div class="flex items-center gap-0.5 text-green-700 dark:text-green-400 font-bold text-xs">
+                <i class="material-icons text-sm">star</i>
+                <span>{{avgrating}}</span>
+            </div>
+            <div class="flex items-center gap-0.5 text-gray-500 dark:text-slate-450 text-[10px]">
+                <i class="material-icons text-xs">people</i>
+                <span>{{totalreview}}</span>
+            </div>
+        </div>
+
+        <!-- 5. Seats -->
+        <div class="busBoxSection17 text-xs text-slate-700 dark:text-slate-350 col-span-1 justify-self-end md:justify-self-auto text-right md:text-left">
+            <div class="font-bold text-slate-800 dark:text-slate-200">{{40 - filledseats.length}} Seats</div>
+            <div class="text-[10px] text-gray-400 dark:text-slate-500">Available</div>
+        </div>
+    </div>
+    <div class="busBoxSection2 flex justify-between items-center border-t border-gray-100 dark:border-slate-800 mt-3 pt-2">
+        <div class="busBoxSection21 flex gap-2 text-gray-400 dark:text-slate-500">
+            <span matTooltip="Charging Point">
+                <i class="material-icons text-sm">power</i>
+            </span>
+            <span matTooltip="Movie">
+                <i class="material-icons text-sm">movie_filter</i>
+            </span>
+            <span matTooltip="Reading Light">
+                <i class="material-icons text-sm">wb_incandescent</i>
+            </span>
+            <span matTooltip="Track My Bus">
+                <i class="material-icons text-sm">directions_bus</i>
+            </span>
+        </div>
+        <div class="busBoxSection22 flex gap-3 text-xs font-semibold text-slate-600 dark:text-slate-350">
+            <div *ngIf="livetracking === 1" class="flex items-center gap-1">
+                <i class="material-icons text-xs text-green-500">gps_fixed</i>
+                <span>Live Tracking</span>
+            </div>
+            <div *ngIf="reschedulable === 1" class="flex items-center gap-1">
+                <i class="material-icons text-xs text-blue-500">restore</i>
+                <span>Reschedulable</span>
+            </div>
+        </div>
+    </div>
+    <div class="busBoxSection3 mt-3">
+        <app-bottom-tab [busid]='busid' [filledseats]="filledseats" [seatprice]="seatprivce" [routedetials]="routedetails"
+            [busarrivaltime]="busarrivaltime" [busdeparturetime]="busdeparturetime"
+            [operatorname]="operatorname" (tabActive)="handleTabActive($event)"></app-bottom-tab>
+    </div>
+
+    <!-- Reviews details popup modal -->
+    <div *ngIf="showReviewsModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-2xl max-w-2xl w-full p-6 border border-gray-150 dark:border-slate-700 animate-fade-in text-slate-800 dark:text-white transition-colors duration-150 max-h-[85vh] overflow-y-auto">
+            <div class="flex justify-between items-center pb-3 border-b border-gray-100 dark:border-slate-700 mb-4">
+                <h3 class="font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-regular fa-star text-yellow-500"></i> Reviews for {{operatorname}}
+                </h3>
+                <button (click)="closeReviewsModal()" class="text-gray-400 hover:text-gray-650 dark:hover:text-slate-200">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Loading State -->
+            <div *ngIf="loadingReviews" class="text-center py-12">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600 mx-auto mb-2"></div>
+                <p class="text-xs text-gray-500 dark:text-slate-400">Loading reviews...</p>
+            </div>
+
+            <!-- Reviews Loaded Content -->
+            <div *ngIf="!loadingReviews">
+                <!-- Averages & Distribution grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl mb-5 border border-gray-100 dark:border-slate-800">
+                    <div class="flex flex-col justify-center items-center md:border-r border-gray-200 dark:border-slate-800">
+                        <div class="text-4xl font-extrabold text-slate-900 dark:text-white">{{avgrating}}</div>
+                        <div class="flex gap-0.5 text-yellow-500 my-1 text-sm">
+                            <i *ngFor="let star of [1,2,3,4,5]" class="fa-star" [class.fa-solid]="star <= avgrating" [class.fa-regular]="star > avgrating"></i>
+                        </div>
+                        <div class="text-xs text-gray-500 dark:text-slate-400 font-medium">Based on {{reviews.length}} reviews</div>
+                    </div>
+
+                    <!-- Stars counts progress bars -->
+                    <div class="space-y-1.5" *ngIf="ratingBreakdown">
+                        <div *ngFor="let star of [5,4,3,2,1]" class="flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-300">
+                            <span class="w-3">{{star}}★</span>
+                            <div class="flex-1 bg-gray-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                                <div class="bg-yellow-500 h-full rounded-full" [style.width.%]="reviews.length > 0 ? (ratingBreakdown[star] / reviews.length) * 100 : 0"></div>
+                            </div>
+                            <span class="w-8 text-right text-[10px] text-gray-400 dark:text-slate-500">({{ratingBreakdown[star] || 0}})</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty reviews state -->
+                <div *ngIf="reviews.length === 0" class="text-center py-8 text-gray-500 dark:text-slate-400">
+                    No verified reviews posted for this route yet.
+                </div>
+
+                <!-- Reviews list -->
+                <div class="space-y-4 max-h-[350px] overflow-y-auto pr-1">
+                    <div *ngFor="let r of reviews; let i = index" class="p-4 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-xl space-y-2 relative shadow-sm">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="font-bold text-xs text-slate-800 dark:text-slate-200">{{r.userName}}</span>
+                                    <span *ngIf="r.isVerified || r.user?.isProfileVerified" class="bg-yellow-100 dark:bg-yellow-950/20 text-yellow-800 dark:text-yellow-400 text-[9px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                                        <i class="fa-solid fa-circle-check"></i> {{ lang.text['trusted_reviewer'] }}
+                                    </span>
+                                </div>
+                                <div class="flex gap-0.5 text-yellow-500 text-[10px] mt-0.5">
+                                    <i *ngFor="let star of [1,2,3,4,5]" class="fa-star" [class.fa-solid]="star <= r.overallRating" [class.fa-regular]="star > r.overallRating"></i>
+                                </div>
+                            </div>
+                            <span class="text-[9px] text-gray-400 dark:text-slate-500">{{r.createdAt | date:'shortDate'}}</span>
+                        </div>
+                        <div class="text-xs font-semibold text-slate-900 dark:text-white mt-1">{{r.title}}</div>
+                        <p class="text-[11px] text-gray-650 dark:text-slate-350 leading-relaxed">{{r.description}}</p>
+                        
+                        <!-- Review upvotes and report buttons -->
+                        <div class="flex justify-between items-center border-t border-gray-50 dark:border-slate-800/80 pt-2 text-[10px]">
+                            <div class="flex items-center gap-2">
+                                <button (click)="markHelpful(r._id, i)" class="text-gray-500 hover:text-green-600 dark:text-slate-400 dark:hover:text-green-400 flex items-center gap-1 transition">
+                                    <i class="fa-regular fa-thumbs-up"></i> Helpful ({{r.helpful || 0}})
+                                </button>
+                            </div>
+                            <button *ngIf="!r.isReported" (click)="reportReview(r._id, i)" class="text-gray-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400 flex items-center gap-1 transition">
+                                <i class="fa-regular fa-flag"></i> Report Abuse
+                            </button>
+                            <span *ngIf="r.isReported" class="text-red-500 font-semibold italic flex items-center gap-0.5">
+                                <i class="fa-solid fa-circle-exclamation text-[8px]"></i> Reported
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer close -->
+            <div class="flex justify-end pt-3 border-t border-gray-100 dark:border-slate-700 mt-5">
+                <button (click)="closeReviewsModal()" class="px-5 py-2 bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 text-white rounded-lg text-xs font-bold transition duration-150">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

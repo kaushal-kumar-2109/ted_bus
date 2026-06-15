@@ -1,0 +1,230 @@
+<!-- cab-rental.component.html -->
+<div class="min-h-screen bg-gray-50 dark:bg-slate-900 pb-20 transition-colors duration-200">
+  
+  <!-- Hero Header -->
+  <div class="bg-gradient-to-r from-red-800 to-red-600 py-16 text-white text-center shadow-lg relative">
+    <div class="absolute inset-0 bg-cover bg-center opacity-15" style="background-image: url('assets/hero-img.png');"></div>
+    <div class="relative z-10 max-w-4xl mx-auto px-4">
+      <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight mb-2">{{ lang.text['cabs_title'] }}</h1>
+      <p class="text-sm md:text-lg font-light text-red-100">Reserve top-rated outstation cabs and airport transfers at the lowest fares.</p>
+    </div>
+  </div>
+
+  <div class="max-w-4xl mx-auto px-4 mt-10">
+
+    <!-- ==============================================
+         STEP 1: SEARCH WIDGET
+         ============================================== -->
+    <div *ngIf="bookingStep === 'search'" class="bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 shadow-sm border border-gray-150 dark:border-slate-700/50 animate-fade-in">
+      
+      <!-- Cab type options tabs -->
+      <div class="flex gap-2 border-b border-gray-100 dark:border-slate-700/30 pb-4 mb-6 overflow-x-auto whitespace-nowrap scrollbar-none">
+        <button class="bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 font-bold px-4 py-2 rounded-xl text-sm border border-red-100 dark:border-red-900/30">
+          <i class="fa-solid fa-car-side mr-1.5"></i>{{ lang.text['outstation'] }}
+        </button>
+        <button class="text-gray-500 hover:text-gray-700 px-4 py-2 rounded-xl text-sm">
+          <i class="fa-solid fa-plane-departure mr-1.5"></i>{{ lang.text['airport_transfer'] }}
+        </button>
+        <button class="text-gray-500 hover:text-gray-700 px-4 py-2 rounded-xl text-sm">
+          <i class="fa-solid fa-clock-rotate-left mr-1.5"></i>{{ lang.text['hourly_rental'] }}
+        </button>
+      </div>
+
+      <!-- Search Form -->
+      <form [formGroup]="searchForm" (ngSubmit)="searchCabs()" class="flex flex-col gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Source -->
+          <div>
+            <label class="block text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">{{ lang.text['from'] }}</label>
+            <input type="text" formControlName="source" placeholder="Enter Pickup City..." class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-750 dark:text-white transition">
+            <span *ngIf="searchForm.get('source')?.touched && searchForm.get('source')?.invalid" class="text-xs text-red-500 mt-1 block">Pickup location is required.</span>
+          </div>
+
+          <!-- Destination -->
+          <div>
+            <label class="block text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">{{ lang.text['to'] }}</label>
+            <input type="text" formControlName="destination" placeholder="Enter Drop-off City..." class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-750 dark:text-white transition">
+            <span *ngIf="searchForm.get('destination')?.touched && searchForm.get('destination')?.invalid" class="text-xs text-red-500 mt-1 block">Drop-off location is required.</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Date -->
+          <div>
+            <label class="block text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">{{ lang.text['date'] }}</label>
+            <input type="date" formControlName="pickupDate" class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-750 dark:text-white transition">
+          </div>
+
+          <!-- Time -->
+          <div>
+            <label class="block text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">Pickup Time</label>
+            <input type="time" formControlName="pickupTime" class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-750 dark:text-white transition">
+          </div>
+
+          <!-- Trip Type -->
+          <div>
+            <label class="block text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">Trip details</label>
+            <select formControlName="tripType" class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-750 dark:text-white transition">
+              <option value="outstation-one-way">One Way Trip</option>
+              <option value="outstation-round-trip">Round Trip</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" [disabled]="loadingCabs" class="bg-red-600 text-white font-bold py-3.5 rounded-2xl hover:bg-red-700 transition shadow-lg shadow-red-600/20 disabled:opacity-40 flex items-center justify-center gap-2 mt-4 text-base">
+          <span *ngIf="loadingCabs" class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></span>
+          {{ lang.text['search_cabs'] }}
+        </button>
+      </form>
+    </div>
+
+    <!-- ==============================================
+         STEP 2: RESULTS LIST
+         ============================================== -->
+    <div *ngIf="bookingStep === 'results'" class="flex flex-col gap-6 animate-fade-in">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-bold text-gray-800 dark:text-white">Available Vehicles ({{ searchForm.value.source }} to {{ searchForm.value.destination }})</h2>
+        <button (click)="bookingStep = 'search'" class="text-sm text-red-600 dark:text-red-400 hover:underline font-semibold flex items-center gap-1.5">
+          <i class="fa-solid fa-chevron-left"></i>Modify Search
+        </button>
+      </div>
+
+      <div class="flex flex-col gap-4">
+        <div *ngFor="let cab of cabs" class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-gray-150 dark:border-slate-700/50 hover:shadow-md transition-all duration-200 grid grid-cols-1 md:grid-cols-4 gap-6 items-center">
+          
+          <!-- Image -->
+          <div class="col-span-1 h-28 rounded-xl overflow-hidden relative border dark:border-slate-700/60 bg-gray-50">
+            <img class="w-full h-full object-cover" [src]="cab.image" alt="">
+          </div>
+
+          <!-- Description -->
+          <div class="col-span-2 flex flex-col justify-between h-full">
+            <div>
+              <div class="flex items-center gap-2 mb-1.5">
+                <span class="font-bold text-gray-800 dark:text-white text-lg">{{ cab.name }}</span>
+                <span class="bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 text-[10px] uppercase font-extrabold tracking-wider px-2 py-0.5 rounded shadow-sm">
+                  {{ cab.type }}
+                </span>
+              </div>
+              <p class="text-xs text-gray-400 dark:text-slate-500">Vehicle: {{ cab.vehicleNo }} • Driver: {{ cab.driverName }}</p>
+            </div>
+            
+            <div class="flex items-center gap-6 mt-4 text-xs font-semibold text-gray-500 dark:text-gray-300">
+              <span class="flex items-center gap-1"><i class="fa-solid fa-users text-red-500"></i> {{ cab.capacity }} Passengers</span>
+              <span class="flex items-center gap-1 text-yellow-500"><i class="fa-solid fa-star"></i> {{ cab.rating }} Ratings</span>
+            </div>
+          </div>
+
+          <!-- Fare & CTA -->
+          <div class="col-span-1 text-right border-t md:border-t-0 md:border-l border-gray-100 dark:border-slate-700/50 pt-4 md:pt-0 md:pl-6 flex flex-col justify-between h-full">
+            <div>
+              <span class="text-gray-400 dark:text-slate-500 text-xs block">Estimated Fare</span>
+              <span class="font-black text-gray-850 dark:text-white text-2xl">INR {{ cab.pricePerKm * estimatedDistance }}</span>
+              <span class="text-[10px] text-gray-400 dark:text-slate-500 block mt-0.5">Rate: INR {{ cab.pricePerKm }}/km</span>
+            </div>
+            <button (click)="selectCab(cab)" class="w-full bg-red-600 text-white font-bold py-2 rounded-xl hover:bg-red-700 transition mt-4 shadow-sm text-sm">
+              {{ lang.text['book_now'] }}
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ==============================================
+         STEP 3: PASSENGER DETAILS WIDGET
+         ============================================== -->
+    <div *ngIf="bookingStep === 'details'" class="bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 shadow-sm border border-gray-150 dark:border-slate-700/50 animate-fade-in max-w-xl mx-auto">
+      <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-6">Review Booking details</h2>
+      
+      <!-- Summary receipt block -->
+      <div class="bg-gray-50 dark:bg-slate-750 rounded-2xl p-4 border dark:border-slate-700/50 mb-6 flex justify-between text-sm">
+        <div>
+          <div class="font-bold text-gray-800 dark:text-white">{{ selectedCab?.name }} ({{ selectedCab?.type }})</div>
+          <div class="text-xs text-gray-400 mt-0.5">{{ searchForm.value.source }} to {{ searchForm.value.destination }}</div>
+          <div class="text-xs text-gray-400">Date: {{ searchForm.value.pickupDate }} at {{ searchForm.value.pickupTime }}</div>
+        </div>
+        <div class="text-right">
+          <span class="text-xs text-gray-400 block">Total Est. Fare</span>
+          <span class="font-black text-red-600 dark:text-red-400 text-lg">INR {{ estimatedFare }}</span>
+        </div>
+      </div>
+
+      <form [formGroup]="bookingForm" (ngSubmit)="confirmBooking()" class="flex flex-col gap-4">
+        <div>
+          <label class="block text-sm font-semibold text-gray-600 dark:text-slate-300 mb-1.5">Passenger Full Name</label>
+          <input type="text" formControlName="passengerName" placeholder="Enter passenger name..." class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-750 dark:text-white transition">
+          <span *ngIf="bookingForm.get('passengerName')?.touched && bookingForm.get('passengerName')?.invalid" class="text-xs text-red-500 mt-1 block">Full Name is required.</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-slate-300 mb-1.5">Phone Number</label>
+            <input type="text" formControlName="passengerPhone" placeholder="10-digit phone number..." class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-750 dark:text-white transition">
+            <span *ngIf="bookingForm.get('passengerPhone')?.touched && bookingForm.get('passengerPhone')?.invalid" class="text-xs text-red-500 mt-1 block">Provide a valid Indian phone number.</span>
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-slate-300 mb-1.5">Email Address</label>
+            <input type="email" formControlName="passengerEmail" placeholder="passenger@domain.com" class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-750 dark:text-white transition">
+            <span *ngIf="bookingForm.get('passengerEmail')?.touched && bookingForm.get('passengerEmail')?.invalid" class="text-xs text-red-500 mt-1 block">Provide a valid email.</span>
+          </div>
+        </div>
+
+        <div class="flex gap-4 mt-6">
+          <button type="button" (click)="bookingStep = 'results'" class="w-1/2 px-5 py-3 border rounded-xl text-sm font-semibold hover:bg-gray-100 transition">Back</button>
+          <button type="submit" class="w-1/2 bg-red-600 text-white font-bold py-3 rounded-xl hover:bg-red-700 transition shadow-md text-sm">
+            Pay & Confirm Booking
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ==============================================
+         STEP 4: BOOKING SUCCESS TICKET
+         ============================================== -->
+    <div *ngIf="bookingStep === 'success'" class="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-sm border border-gray-150 dark:border-slate-700/50 animate-scale-up max-w-md mx-auto text-center">
+      <div class="w-20 h-20 bg-green-50 dark:bg-green-950/20 text-green-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 shadow-inner animate-pulse">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+      
+      <h2 class="text-2xl font-black text-gray-800 dark:text-white">Cab Booked!</h2>
+      <p class="text-xs text-gray-400 dark:text-slate-500 mt-1.5">A receipt has been successfully sent to {{ bookingForm.value.passengerEmail }}</p>
+      
+      <!-- Receipt Info -->
+      <div class="border-t border-b border-dashed border-gray-200 dark:border-slate-700/60 py-6 my-6 text-left text-sm flex flex-col gap-3.5">
+        <div class="flex justify-between">
+          <span class="text-gray-400 dark:text-slate-500">Booking Reference:</span>
+          <strong class="font-extrabold text-gray-800 dark:text-white">{{ confirmedBookingId }}</strong>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-400 dark:text-slate-500">Cab Car model:</span>
+          <span class="font-semibold text-gray-700 dark:text-gray-200">{{ selectedCab?.name }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-400 dark:text-slate-500">Itinerary route:</span>
+          <span class="font-semibold text-gray-750 dark:text-gray-200">{{ searchForm.value.source }} to {{ searchForm.value.destination }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-400 dark:text-slate-500">Scheduled Date:</span>
+          <span class="font-semibold text-gray-750 dark:text-gray-200">{{ searchForm.value.pickupDate }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-400 dark:text-slate-500">Total Fare:</span>
+          <strong class="font-black text-red-600 dark:text-red-400 text-base">INR {{ estimatedFare }}</strong>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <button (click)="router.navigate(['/profile'])" class="bg-slate-900 text-white font-bold py-3 rounded-xl hover:bg-slate-800 transition shadow-sm text-sm">
+          Go to My Trips
+        </button>
+        <button (click)="reset()" class="text-sm font-semibold text-red-600 dark:text-red-400 hover:underline">
+          Book Another Cab
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+</div>

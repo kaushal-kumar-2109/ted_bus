@@ -1,0 +1,191 @@
+<div class="min-h-screen bg-gray-50 dark:bg-slate-900 pb-20 transition-colors duration-200">
+
+  <!-- Hero Header -->
+  <div class="bg-gradient-to-r from-red-800 to-red-600 py-16 text-white text-center shadow-lg relative">
+    <div class="absolute inset-0 bg-cover bg-center opacity-15" style="background-image: url('assets/hero-img.png');"></div>
+    <div class="relative z-10 max-w-4xl mx-auto px-4">
+      <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight mb-2"><i class="fa-solid fa-plane mr-3"></i>Book Domestic Flights</h1>
+      <p class="text-sm md:text-lg font-light text-red-100">Compare fares across top airlines. Instant e-ticket confirmation.</p>
+    </div>
+  </div>
+
+  <div class="max-w-4xl mx-auto px-4 mt-10">
+
+    <!-- STEP 1: SEARCH -->
+    <div *ngIf="bookingStep === 'search'" class="bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 shadow-sm border border-gray-150 dark:border-slate-700/50 animate-fade-in">
+      <form [formGroup]="searchForm" (ngSubmit)="searchFlights()" class="flex flex-col gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">From City</label>
+            <input type="text" formControlName="fromCity" placeholder="Departure city..." class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-750 dark:text-white transition">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">To City</label>
+            <input type="text" formControlName="toCity" placeholder="Arrival city..." class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-750 dark:text-white transition">
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">Date of Journey</label>
+            <input type="date" formControlName="journeyDate" class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-750 dark:text-white transition">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">Preferred Class</label>
+            <select formControlName="travelClass" class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-750 dark:text-white transition">
+              <option value="economy">Economy</option>
+              <option value="premium-economy">Premium Economy</option>
+              <option value="business">Business</option>
+              <option value="first">First Class</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" [disabled]="loadingFlights" class="bg-red-600 text-white font-bold py-3.5 rounded-2xl hover:bg-red-700 transition shadow-lg shadow-red-600/20 disabled:opacity-40 flex items-center justify-center gap-2 mt-4 text-base">
+          <span *ngIf="loadingFlights" class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></span>
+          <i *ngIf="!loadingFlights" class="fa-solid fa-search"></i> Search Flights
+        </button>
+      </form>
+    </div>
+
+    <!-- STEP 2: RESULTS -->
+    <div *ngIf="bookingStep === 'results'" class="flex flex-col gap-6 animate-fade-in">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-bold text-gray-800 dark:text-white">Flights Found ({{ searchForm.value.fromCity }} → {{ searchForm.value.toCity }})</h2>
+        <button (click)="bookingStep = 'search'" class="text-sm text-red-600 dark:text-red-400 hover:underline font-semibold flex items-center gap-1.5">
+          <i class="fa-solid fa-chevron-left"></i>Modify Search
+        </button>
+      </div>
+
+      <div class="flex flex-col gap-4">
+        <div *ngFor="let flight of filteredFlights" class="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-gray-150 dark:border-slate-700/50 shadow-sm flex flex-col gap-4">
+          <!-- Flight Info -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-gray-50 dark:border-slate-700/40 pb-4 gap-2">
+            <div>
+              <span class="text-xs font-bold text-red-600 dark:text-red-400">{{ flight.flightNumber }}</span>
+              <h3 class="font-extrabold text-gray-800 dark:text-white text-base md:text-lg mt-0.5 m-0">{{ flight.airline }}</h3>
+            </div>
+            <div class="flex items-center gap-4 text-xs text-gray-400 dark:text-slate-500">
+              <span>Type: <strong class="text-gray-650 dark:text-gray-300">Non-stop</strong></span>
+              <span>•</span>
+              <span>Duration: <strong class="text-gray-650 dark:text-gray-300">{{ flight.duration }}</strong></span>
+            </div>
+          </div>
+
+          <!-- Timeline -->
+          <div class="grid grid-cols-3 items-center text-center max-w-lg mx-auto w-full py-2">
+            <div class="text-left">
+              <span class="block font-black text-gray-800 dark:text-white text-lg">{{ flight.departureTime }}</span>
+              <span class="text-xs text-gray-400">{{ flight.departureCity }}</span>
+            </div>
+            <div class="relative flex flex-col items-center">
+              <span class="text-[10px] text-gray-400 dark:text-slate-500 mb-1">{{ flight.duration }}</span>
+              <div class="w-full h-[1px] bg-gray-200 dark:bg-slate-700 relative flex items-center justify-center">
+                <i class="fa-solid fa-plane text-[8px] text-red-500"></i>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="block font-black text-gray-800 dark:text-white text-lg">{{ flight.arrivalTime }}</span>
+              <span class="text-xs text-gray-400">{{ flight.arrivalCity }}</span>
+            </div>
+          </div>
+
+          <!-- Class Options -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-2">
+            <div *ngFor="let cls of flight.classes" (click)="selectFlightClass(flight, cls)" class="border border-gray-100 dark:border-slate-700 hover:border-red-300 rounded-2xl p-3 cursor-pointer hover:bg-red-50/10 dark:hover:bg-red-950/10 transition flex flex-col justify-between">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-gray-800 dark:text-white text-sm">{{ cls.className }}</span>
+                <span [class]="cls.seatsAvailable < 5 ? 'text-amber-500 bg-amber-50 dark:bg-amber-950/20' : 'text-green-600 bg-green-50 dark:bg-green-950/20'" class="text-[9px] font-bold px-1.5 py-0.5 rounded uppercase">
+                  {{ cls.seatsAvailable }} left
+                </span>
+              </div>
+              <div class="font-black text-red-600 dark:text-red-400 text-base mt-3">INR {{ cls.price }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3: PASSENGER DETAILS -->
+    <div *ngIf="bookingStep === 'details'" class="bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 shadow-sm border border-gray-150 dark:border-slate-700/50 animate-fade-in max-w-xl mx-auto">
+      <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-6">Review Booking Details</h2>
+
+      <!-- Summary -->
+      <div class="bg-gray-50 dark:bg-slate-750 rounded-2xl p-4 border dark:border-slate-700/50 mb-6 flex justify-between text-sm">
+        <div>
+          <div class="font-bold text-gray-800 dark:text-white">{{ selectedFlight?.airline }} ({{ selectedFlight?.flightNumber }})</div>
+          <div class="text-xs text-gray-400 mt-0.5">{{ selectedFlight?.departureCity }} → {{ selectedFlight?.arrivalCity }}</div>
+          <div class="text-xs text-gray-400">Class: <strong>{{ selectedClass?.className }}</strong> • Date: {{ searchForm.value.journeyDate }}</div>
+        </div>
+        <div class="text-right">
+          <span class="text-xs text-gray-400 block">Ticket Cost</span>
+          <span class="font-black text-red-600 dark:text-red-400 text-lg">INR {{ selectedClass?.price }}</span>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <form [formGroup]="bookingForm" (ngSubmit)="confirmBooking()" class="flex flex-col gap-4">
+        <div>
+          <label class="block text-sm font-semibold text-gray-600 dark:text-slate-300 mb-1.5">Passenger Full Name</label>
+          <input type="text" formControlName="passengerName" placeholder="Enter passenger name..." class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-750 dark:text-white transition">
+          <span *ngIf="bookingForm.get('passengerName')?.touched && bookingForm.get('passengerName')?.invalid" class="text-xs text-red-500 mt-1 block">Name is required.</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-slate-300 mb-1.5">Age</label>
+            <input type="number" formControlName="passengerAge" placeholder="Age..." class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-750 dark:text-white transition">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-slate-300 mb-1.5">Phone Number</label>
+            <input type="text" formControlName="passengerPhone" placeholder="10-digit number..." class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-750 dark:text-white transition">
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-600 dark:text-slate-300 mb-1.5">Email Address</label>
+          <input type="email" formControlName="passengerEmail" placeholder="passenger@domain.com" class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-750 dark:text-white transition">
+        </div>
+        <div class="flex gap-4 mt-6">
+          <button type="button" (click)="bookingStep = 'results'" class="w-1/2 px-5 py-3 border rounded-xl text-sm font-semibold hover:bg-gray-100 transition">Back</button>
+          <button type="submit" class="w-1/2 bg-red-600 text-white font-bold py-3 rounded-xl hover:bg-red-700 transition shadow-md text-sm">Confirm & Pay</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- STEP 4: SUCCESS -->
+    <div *ngIf="bookingStep === 'success'" class="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-sm border border-gray-150 dark:border-slate-700/50 animate-scale-up max-w-md mx-auto text-center">
+      <div class="w-20 h-20 bg-green-50 dark:bg-green-950/20 text-green-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 shadow-inner animate-pulse">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+
+      <h2 class="text-2xl font-black text-gray-800 dark:text-white">Flight Booked!</h2>
+      <p class="text-xs text-gray-400 dark:text-slate-500 mt-1.5">E-ticket sent to {{ bookingForm.value.passengerEmail }}</p>
+
+      <div class="border-t border-b border-dashed border-gray-200 dark:border-slate-700/60 py-6 my-6 text-left text-sm flex flex-col gap-3.5">
+        <div class="flex justify-between">
+          <span class="text-gray-400 dark:text-slate-500">Booking Reference:</span>
+          <strong class="font-extrabold text-gray-800 dark:text-white">{{ confirmedBookingId }}</strong>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-400 dark:text-slate-500">Flight:</span>
+          <span class="font-semibold text-gray-700 dark:text-gray-200">{{ selectedFlight?.flightNumber }} - {{ selectedFlight?.airline }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-400 dark:text-slate-500">Class:</span>
+          <span class="font-semibold text-gray-700 dark:text-gray-200">{{ selectedClass?.className }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-400 dark:text-slate-500">Route:</span>
+          <span class="font-semibold text-gray-700 dark:text-gray-200">{{ searchForm.value.fromCity }} → {{ searchForm.value.toCity }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-400 dark:text-slate-500">Total Fare:</span>
+          <strong class="font-black text-red-600 dark:text-red-400 text-base">INR {{ selectedClass?.price }}</strong>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <button (click)="router.navigate(['/profile'])" class="bg-slate-900 text-white font-bold py-3 rounded-xl hover:bg-slate-800 transition shadow-sm text-sm">Go to My Trips</button>
+        <button (click)="reset()" class="text-sm font-semibold text-red-600 dark:text-red-400 hover:underline">Book Another Flight</button>
+      </div>
+    </div>
+
+  </div>
+</div>

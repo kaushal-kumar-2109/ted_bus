@@ -1,0 +1,259 @@
+<!-- train-tickets.component.html -->
+<div class="min-h-screen bg-gray-50 dark:bg-slate-900 pb-20 transition-colors duration-200">
+  
+  <!-- Header Banner -->
+  <div class="bg-gradient-to-r from-red-800 to-red-600 py-16 text-white text-center shadow-lg relative">
+    <div class="absolute inset-0 bg-cover bg-center opacity-15" style="background-image: url('assets/hero-img.png');"></div>
+    <div class="relative z-10 max-w-4xl mx-auto px-4">
+      <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight mb-2">{{ lang.text['trains_title'] }}</h1>
+      <p class="text-sm md:text-lg font-light text-red-100">Official IRCTC Authorized Booking. Zero service fees on first booking.</p>
+    </div>
+  </div>
+
+  <div class="max-w-4xl mx-auto px-4 mt-10">
+
+    <!-- ==============================================
+         STEP 1: SEARCH WIDGET
+         ============================================== -->
+    <div *ngIf="bookingStep === 'search'" class="bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 shadow-sm border border-gray-150 dark:border-slate-700/50 animate-fade-in">
+      <form [formGroup]="searchForm" (ngSubmit)="searchTrains()" class="flex flex-col gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- From Station -->
+          <div>
+            <label class="block text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">{{ lang.text['from'] }} Station</label>
+            <input type="text" formControlName="fromStation" placeholder="Station name or code..." class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-755 dark:text-white transition">
+          </div>
+
+          <!-- To Station -->
+          <div>
+            <label class="block text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">{{ lang.text['to'] }} Station</label>
+            <input type="text" formControlName="toStation" placeholder="Station name or code..." class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-755 dark:text-white transition">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Date -->
+          <div>
+            <label class="block text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">{{ lang.text['date'] }} of Journey</label>
+            <input type="date" formControlName="journeyDate" class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-755 dark:text-white transition">
+          </div>
+
+          <!-- Preferred Coach Class -->
+          <div>
+            <label class="block text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">Preferred Class</label>
+            <select formControlName="coachClass" class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-755 dark:text-white transition">
+              <option value="all">All Classes</option>
+              <option value="1A">AC First Class (1A)</option>
+              <option value="2A">AC 2 Tier (2A)</option>
+              <option value="3A">AC 3 Tier (3A)</option>
+              <option value="SL">Sleeper Class (SL)</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" [disabled]="loadingTrains" class="bg-red-600 text-white font-bold py-3.5 rounded-2xl hover:bg-red-700 transition shadow-lg shadow-red-600/20 disabled:opacity-40 flex items-center justify-center gap-2 mt-4 text-base">
+          <span *ngIf="loadingTrains" class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></span>
+          {{ lang.text['search_trains'] }}
+        </button>
+      </form>
+    </div>
+
+    <!-- ==============================================
+         STEP 2: RESULTS LIST
+         ============================================== -->
+    <div *ngIf="bookingStep === 'results'" class="flex flex-col gap-6 animate-fade-in">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-bold text-gray-800 dark:text-white">Trains Found ({{ searchForm.value.fromStation }} to {{ searchForm.value.toStation }})</h2>
+        <button (click)="bookingStep = 'search'" class="text-sm text-red-600 dark:text-red-400 hover:underline font-semibold flex items-center gap-1.5">
+          <i class="fa-solid fa-chevron-left"></i>Modify Search
+        </button>
+      </div>
+
+      <!-- Train Cards -->
+      <div class="flex flex-col gap-4">
+        <div *ngFor="let train of filteredTrains" class="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-gray-150 dark:border-slate-700/50 shadow-sm flex flex-col gap-4">
+          <!-- Top Row: Train Info -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-gray-50 dark:border-slate-700/40 pb-4 gap-2">
+            <div>
+              <span class="text-xs font-bold text-red-600 dark:text-red-400">#{{ train.number }}</span>
+              <h3 class="font-extrabold text-gray-800 dark:text-white text-base md:text-lg mt-0.5">{{ train.name }}</h3>
+            </div>
+            
+            <div class="flex items-center gap-4 text-xs text-gray-400 dark:text-slate-500">
+              <span>Runs: <strong class="text-gray-650 dark:text-gray-300">Daily</strong></span>
+              <span>•</span>
+              <span>Duration: <strong class="text-gray-650 dark:text-gray-300">{{ train.duration }}</strong></span>
+            </div>
+          </div>
+
+          <!-- Middle Row: Station Timing Logs -->
+          <div class="grid grid-cols-3 items-center text-center max-w-lg mx-auto w-full py-2">
+            <div class="text-left">
+              <span class="block font-black text-gray-800 dark:text-white text-lg">{{ train.departureTime }}</span>
+              <span class="text-xs text-gray-400">{{ train.departureStation }}</span>
+            </div>
+            <div class="relative flex flex-col items-center">
+              <span class="text-[10px] text-gray-400 dark:text-slate-500 mb-1">Direct</span>
+              <div class="w-full h-[1px] bg-gray-200 dark:bg-slate-700 relative flex items-center justify-center">
+                <i class="fa-solid fa-circle text-[6px] text-red-500"></i>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="block font-black text-gray-800 dark:text-white text-lg">{{ train.arrivalTime }}</span>
+              <span class="text-xs text-gray-400">{{ train.arrivalStation }}</span>
+            </div>
+          </div>
+
+          <!-- Bottom Row: Coach Classes Grid -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-2">
+            <div *ngFor="let cls of train.classes" (click)="selectTrainClass(train, cls)" class="border border-gray-100 dark:border-slate-700 hover:border-red-300 rounded-2xl p-3 cursor-pointer hover:bg-red-50/10 dark:hover:bg-red-950/10 transition flex flex-col justify-between">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-gray-800 dark:text-white text-sm">{{ cls.className }}</span>
+                <span [class]="cls.seatsAvailable < 5 ? 'text-amber-500 bg-amber-50 dark:bg-amber-950/20' : 'text-green-600 bg-green-50 dark:bg-green-950/20'" class="text-[9px] font-bold px-1.5 py-0.5 rounded uppercase">
+                  Avail: {{ cls.seatsAvailable }}
+                </span>
+              </div>
+              <div class="font-black text-red-600 dark:text-red-400 text-base mt-3">INR {{ cls.price }}</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ==============================================
+         STEP 3: PASSENGER BOOKING DETAILS
+         ============================================== -->
+    <div *ngIf="bookingStep === 'details'" class="bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 shadow-sm border border-gray-150 dark:border-slate-700/50 animate-fade-in max-w-xl mx-auto">
+      <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-6">Review Booking details</h2>
+      
+      <!-- Summary receipt block -->
+      <div class="bg-gray-50 dark:bg-slate-750 rounded-2xl p-4 border dark:border-slate-700/50 mb-6 flex justify-between text-sm">
+        <div>
+          <div class="font-bold text-gray-800 dark:text-white">{{ selectedTrain?.name }} (#{{ selectedTrain?.number }})</div>
+          <div class="text-xs text-gray-400 mt-0.5">{{ selectedTrain?.departureStation }} to {{ selectedTrain?.arrivalStation }}</div>
+          <div class="text-xs text-gray-400">Class: <strong>{{ selectedClass?.className }}</strong> • Date: {{ searchForm.value.journeyDate }}</div>
+        </div>
+        <div class="text-right">
+          <span class="text-xs text-gray-400 block">Total Ticket Cost</span>
+          <span class="font-black text-red-600 dark:text-red-400 text-lg">INR {{ selectedClass?.price }}</span>
+        </div>
+      </div>
+
+      <!-- IRCTC User Verification (Required) -->
+      <div class="border border-slate-100 dark:border-slate-700/60 rounded-2xl p-4 mb-6 bg-slate-50/50 dark:bg-slate-850">
+        <h3 class="font-bold text-sm text-gray-700 dark:text-white mb-2">IRCTC User Authentication</h3>
+        <p class="text-xs text-gray-400 mb-3 leading-relaxed">Enter your registered IRCTC Username to authenticate with Indian Railways system.</p>
+        
+        <div class="flex gap-2 items-center" *ngIf="!irctcVerified">
+          <input type="text" [(ngModel)]="irctcUsername" placeholder="Enter IRCTC Username..." class="flex-1 outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm focus:border-red-500 bg-white dark:bg-slate-750 dark:text-white transition">
+          <button (click)="verifyIRCTC()" [disabled]="verifyingIrctc || !irctcUsername.trim()" class="bg-red-600 text-white font-semibold px-4 py-2 rounded-xl text-xs hover:bg-red-700 transition disabled:opacity-40 flex items-center gap-1.5">
+            <span *ngIf="verifyingIrctc" class="animate-spin rounded-full h-3 h-3 border-b-2 border-white"></span>
+            Verify
+          </button>
+        </div>
+
+        <div *ngIf="irctcVerified" class="flex items-center gap-2 text-xs font-bold text-green-600">
+          <i class="fa-solid fa-circle-check text-base"></i>
+          <span>IRCTC User Verified: <u>{{ irctcUsername }}</u></span>
+        </div>
+      </div>
+
+      <!-- Passenger Form -->
+      <form [formGroup]="bookingForm" (ngSubmit)="confirmBooking()" class="flex flex-col gap-4">
+        <div>
+          <label class="block text-sm font-semibold text-gray-600 dark:text-slate-300 mb-1.5">Passenger Full Name</label>
+          <input type="text" formControlName="passengerName" placeholder="Enter passenger name..." class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-750 dark:text-white transition">
+          <span *ngIf="bookingForm.get('passengerName')?.touched && bookingForm.get('passengerName')?.invalid" class="text-xs text-red-500 mt-1 block">Name is required.</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-slate-300 mb-1.5">Passenger Age</label>
+            <input type="number" formControlName="passengerAge" placeholder="Age in years..." class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-750 dark:text-white transition">
+            <span *ngIf="bookingForm.get('passengerAge')?.touched && bookingForm.get('passengerAge')?.invalid" class="text-xs text-red-500 mt-1 block">Provide a valid age (5-100).</span>
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-slate-300 mb-1.5">{{ lang.text['berth_pref'] }}</label>
+            <select formControlName="berthPreference" class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-755 dark:text-white transition bg-white">
+              <option value="lower">Lower Berth</option>
+              <option value="middle">Middle Berth</option>
+              <option value="upper">Upper Berth</option>
+              <option value="side-lower">Side Lower</option>
+              <option value="side-upper">Side Upper</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-slate-300 mb-1.5">Phone Number</label>
+            <input type="text" formControlName="passengerPhone" placeholder="10-digit number..." class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-750 dark:text-white transition">
+            <span *ngIf="bookingForm.get('passengerPhone')?.touched && bookingForm.get('passengerPhone')?.invalid" class="text-xs text-red-500 mt-1 block">Provide a valid Indian phone number.</span>
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-slate-300 mb-1.5">Email Address</label>
+            <input type="email" formControlName="passengerEmail" placeholder="passenger@domain.com" class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-750 dark:text-white transition">
+            <span *ngIf="bookingForm.get('passengerEmail')?.touched && bookingForm.get('passengerEmail')?.invalid" class="text-xs text-red-500 mt-1 block">Provide a valid email.</span>
+          </div>
+        </div>
+
+        <div class="flex gap-4 mt-6">
+          <button type="button" (click)="bookingStep = 'results'" class="w-1/2 px-5 py-3 border rounded-xl text-sm font-semibold hover:bg-gray-100 transition">Back</button>
+          <button type="submit" [disabled]="!irctcVerified" class="w-1/2 bg-red-600 text-white font-bold py-3 rounded-xl hover:bg-red-700 transition shadow-md text-sm disabled:opacity-40">
+            Confirm & Pay
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ==============================================
+         STEP 4: BOOKING SUCCESS TICKET
+         ============================================== -->
+    <div *ngIf="bookingStep === 'success'" class="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-sm border border-gray-150 dark:border-slate-700/50 animate-scale-up max-w-md mx-auto text-center">
+      <div class="w-20 h-20 bg-green-50 dark:bg-green-950/20 text-green-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 shadow-inner animate-pulse">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+      
+      <h2 class="text-2xl font-black text-gray-800 dark:text-white">Ticket Booked!</h2>
+      <p class="text-xs text-gray-400 dark:text-slate-500 mt-1.5">IRCTC Boarding Pass sent to {{ bookingForm.value.passengerEmail }}</p>
+      
+      <!-- Receipt Info -->
+      <div class="border-t border-b border-dashed border-gray-200 dark:border-slate-700/60 py-6 my-6 text-left text-sm flex flex-col gap-3.5">
+        <div class="flex justify-between">
+          <span class="text-gray-400 dark:text-slate-500">PNR Reference:</span>
+          <strong class="font-extrabold text-gray-800 dark:text-white">{{ confirmedBookingId }}</strong>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-400 dark:text-slate-500">Train Number & Name:</span>
+          <span class="font-semibold text-gray-700 dark:text-gray-200">{{ selectedTrain?.number }} - {{ selectedTrain?.name }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-400 dark:text-slate-500">Class & Berth:</span>
+          <span class="font-semibold text-gray-750 dark:text-gray-200">{{ selectedClass?.className }} • {{ bookingForm.value.berthPreference | uppercase }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-400 dark:text-slate-500">Itinerary route:</span>
+          <span class="font-semibold text-gray-755 dark:text-gray-200">{{ searchForm.value.fromStation }} to {{ searchForm.value.toStation }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-400 dark:text-slate-500">Total Ticket Fare:</span>
+          <strong class="font-black text-red-600 dark:text-red-400 text-base">INR {{ selectedClass?.price }}</strong>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <button (click)="router.navigate(['/profile'])" class="bg-slate-900 text-white font-bold py-3 rounded-xl hover:bg-slate-800 transition shadow-sm text-sm">
+          Go to My Trips
+        </button>
+        <button (click)="reset()" class="text-sm font-semibold text-red-600 dark:text-red-400 hover:underline">
+          Book Another Ticket
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+</div>

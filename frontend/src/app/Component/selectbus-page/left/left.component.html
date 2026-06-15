@@ -1,0 +1,61 @@
+<div class="left bg-white dark:bg-slate-900 border-r md:border-r-0 border-gray-200 dark:border-slate-800 h-fit text-slate-800 dark:text-slate-200 transition-colors duration-150 p-4 md:rounded-2xl md:border md:border-gray-150 md:dark:border-slate-800/80 shadow-none md:shadow-sm">
+    <div class="left_filters mb-6">
+        <p class="font-bold text-slate-400 dark:text-slate-500 text-[10px] tracking-widest uppercase mb-3">{{ lang.text['filters'] }}</p>
+        <ul class="space-y-1">
+            <li (click)="handlelivetrackingclick()" class="py-2.5 border-b border-gray-100 dark:border-slate-800 hover:text-red-500 cursor-pointer flex items-center justify-between transition">
+                <div class="first-section flex items-center gap-3 text-xs md:text-sm">
+                    <mat-icon class="text-gray-500 dark:text-slate-400">gps_fixed</mat-icon>
+                    <span>{{ lang.text['live_tracking'] }}</span>
+                </div>
+                <mat-icon *ngIf="sidefiltervalues.livetracking" style="color: green;" class="text-sm">check_circle_outline</mat-icon>
+            </li>
+            <li (click)="handlerescheduleclick()" class="py-2.5 border-b border-gray-100 dark:border-slate-800 hover:text-red-500 cursor-pointer flex items-center justify-between transition">
+                <div class="first-section flex items-center gap-3 text-xs md:text-sm">
+                    <mat-icon class="text-gray-500 dark:text-slate-400">restore</mat-icon>
+                    <span>{{ lang.text['reschedulable'] }}</span>
+                </div>
+                <mat-icon *ngIf="sidefiltervalues.reschedulable" style="color: green;" class="text-sm">check_circle_outline</mat-icon>
+            </li>
+        </ul>
+    </div>
+    
+    <div class="left_filters mb-6">
+        <p class="font-bold text-slate-400 dark:text-slate-500 text-[10px] tracking-widest uppercase mb-3">{{ lang.text['departure_time'] }}</p>
+        <ul class="space-y-2">
+            <li *ngFor="let key of getobjectkey(sidefiltervalues.departuretime)" class="flex items-center gap-3 text-xs md:text-sm py-1">
+                <input type="checkbox" [name]="key" [checked]="sidefiltervalues.departuretime[key]" (change)="handledeparturetimeclick($event,key)" class="rounded border-gray-300 dark:border-slate-700 bg-transparent text-red-500 focus:ring-red-500">
+                <mat-icon class="text-gray-400 dark:text-slate-500 text-sm">av_timer</mat-icon>
+                <span class="capitalize text-slate-600 dark:text-slate-300">{{key}}</span>
+            </li>
+        </ul>
+    </div>
+    <div class="left_filters mb-6">
+        <p class="font-bold text-slate-400 dark:text-slate-500 text-[10px] tracking-widest uppercase mb-3">{{ lang.text['bus_types'] }}</p>
+        <ul class="space-y-2">
+            <li *ngFor="let key of getobjectkey(sidefiltervalues.bustype)" class="flex items-center gap-3 text-xs md:text-sm py-1">
+                <input type="checkbox" [name]="key" [checked]="sidefiltervalues.bustype[key]" (change)="handlebustypeclick($event,key)" class="rounded border-gray-300 dark:border-slate-700 bg-transparent text-red-500 focus:ring-red-500">
+                <mat-icon class="text-gray-400 dark:text-slate-500 text-sm">airline_seat_legroom_extra</mat-icon>
+                <span class="capitalize text-slate-600 dark:text-slate-300">{{key}}</span>
+            </li>
+        </ul>
+    </div>
+    <div class="left_filters mb-6">
+        <p class="font-bold text-slate-400 dark:text-slate-500 text-[10px] tracking-widest uppercase mb-3">{{ lang.text['arrival_time'] }}</p>
+        <ul class="space-y-2">
+            <li *ngFor="let key of getobjectkey(sidefiltervalues.arrivaltime)" class="flex items-center gap-3 text-xs md:text-sm py-1">
+                <input type="checkbox" [name]="key" [checked]="sidefiltervalues.arrivaltime[key]" (change)="handlearivaltimeclick($event,key)" class="rounded border-gray-300 dark:border-slate-700 bg-transparent text-red-500 focus:ring-red-500">
+                <mat-icon class="text-gray-400 dark:text-slate-500 text-sm">av_timer</mat-icon>
+                <span class="capitalize text-slate-600 dark:text-slate-300">{{key}}</span>
+            </li>
+        </ul>
+    </div>
+    <div class="left_filters mb-6">
+        <p class="font-bold text-slate-400 dark:text-slate-500 text-[10px] tracking-widest uppercase mb-3">{{ lang.text['amenities'] }}</p>
+        <ul class="space-y-2">
+            <li *ngFor="let key of getobjectkey(sidefiltervalues.amenities)" class="flex items-center gap-3 text-xs md:text-sm py-1">
+                <mat-icon class="text-gray-450 dark:text-slate-500 text-sm">{{amenityIcon[key]}}</mat-icon>
+                <span class="capitalize text-slate-600 dark:text-slate-300">{{key}}</span>
+            </li>
+        </ul>
+    </div>
+</div>

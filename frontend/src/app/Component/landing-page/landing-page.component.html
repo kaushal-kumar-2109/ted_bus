@@ -1,0 +1,295 @@
+<section
+    class="h-[32rem] bg-main-color bg-[url('assets/hero-img.png')] bg-center bg-no-repeat bg-cover flex justify-center">
+    <div class="flex flex-col items-center w-full max-w-[1400px]">
+        <h1 class="text-2xl mx-4 md:text-[2rem] text-white font-bold mt-16 mb-4 text-center">{{ lang.text['hero_title'] }}</h1>
+
+        <!-- travel search section starts here -->
+        <div
+            class="w-[90%] sm:w-[80%] lg:h-24 mt-4 bg-white dark:bg-slate-900 cursor-pointer relative bottom-7 sm:bottom-0 flex flex-col lg:flex-row rounded-3xl overflow-hidden hover:drop-shadow-lg border border-gray-150 dark:border-slate-800 transition-colors duration-150">
+            <!-- travel search left side  -->
+            <div class="h-full flex flex-col sm:flex-row items-center justify-center lg:w-1/2">
+                <div class="h-full border-b sm:border-r border-gray-300 dark:border-slate-700 w-full md:w-[50%] sm:w-auto">
+                    <div class="px-7 py-8 flex items-center h-full gap-3">
+                        <i class="fa-solid fa-bus-simple text-gray-500 dark:text-slate-400 text-2xl"></i>
+                        <input class="outline-none w-full bg-transparent text-slate-800 dark:text-white" type="text" name="fromLoc" id="fromLoc" [placeholder]="lang.text['from']"
+                            [matMenuTriggerFor]="menu" [(ngModel)]="fromoption">
+                        <mat-menu #menu="matMenu">
+                            <button mat-menu-item (click)="fromEvent('Delhi')">Delhi</button>
+                            <button mat-menu-item (click)="fromEvent('Mumbai')">Mumbai</button>
+                            <button mat-menu-item (click)="fromEvent('Banglore')">Banglore</button>
+                            <button mat-menu-item (click)="fromEvent('Kolkata')">Kolkata</button>
+                            <button mat-menu-item (click)="fromEvent('Chennai')">Chennai</button>
+                        </mat-menu>
+                    </div>
+                </div>
+                <div class="w-10 h-10 bg-white dark:bg-slate-800 rounded-full grid place-content-center absolute border border-gray-300 dark:border-slate-700 shadow-sm">
+                    <i class="fa-solid fa-arrows-turn-to-dots text-gray-500 dark:text-slate-400 text-xl"></i>
+                </div>
+                <div class="h-full border-b sm:border-r border-gray-300 dark:border-slate-700 w-full md:w-[50%] sm:w-auto">
+                    <div class="px-7 py-8 flex items-center h-full gap-3">
+                        <i class="fa-solid fa-person-walking-luggage text-gray-500 dark:text-slate-400 text-2xl"></i>
+                        <input class="outline-none w-full bg-transparent text-slate-800 dark:text-white" type="text" name="toLoc" id="toLoc" [placeholder]="lang.text['to']"
+                            [matMenuTriggerFor]="menu2" [(ngModel)]="tooption">
+                        <mat-menu #menu2="matMenu">
+                            <button mat-menu-item (click)="toEvent('Jaipur')">Jaipur</button>
+                            <button mat-menu-item (click)="toEvent('Goa')">Goa</button>
+                            <button mat-menu-item (click)="toEvent('Mysore')">Mysore</button>
+                            <button mat-menu-item (click)="toEvent('Darjeeling')">Darjeeling</button>
+                            <button mat-menu-item (click)="toEvent('Pondicherry')">Pondicherry</button>
+                        </mat-menu>
+                    </div>
+                </div>
+            </div>
+            <!-- travel search right section  -->
+            <div class="flex bg-white dark:bg-slate-900 flex-col sm:flex-row lg:w-1/2">
+                <div class="h-full border-b sm:border-r border-gray-300 dark:border-slate-700 sm:w-1/2 w-full">
+                    <div class="px-7 py-8 flex items-center h-full gap-3 group relative pr-12">
+                        <i class="fa-solid fa-calendar-days text-gray-500 dark:text-slate-400 text-2xl"></i>
+                        <input matInput class="outline-none opacity-0 scale-[3] h-14 w-[30px] absolute left-14 z-10 cursor-pointer"
+                            placeholder="Date" [matDatepicker]="picker" (click)="picker.open()"
+                            (dateChange)="matchDate($event)">
+                        <p class="text-gray-400 dark:text-slate-300">{{ date ? date : lang.text['date'] }}</p>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </div>
+                </div>
+                <button
+                    class="px-7 py-8 flex items-center justify-center bg-red-400 whitespace-nowrap text-white font-bold w-full sm:w-1/2 text-center hover:bg-red-500 transition-colors"
+                    (click)="submit()">
+                    {{ lang.text['search_buses'] }}
+                </button>
+            </div>
+        </div>
+        <!-- travel search section ends here -->
+    </div>
+</section>
+<!-- -------------------------- hero section ends here ---------------------------  -->
+
+<!-- ------------------------------- offers section starts here -------------------- -->
+<section class="flex relative md:bottom-[150px] mb-20 mt-10 md:my-0 justify-center">
+    <div class="flex flex-col items-center w-full max-w-[1400px] py-6 pb-0">
+        <div class="w-full md:w-[83%] md:p-8 flex flex-col gap-6 bg-white dark:bg-slate-900 md:rounded-3xl md:drop-shadow-xl border border-transparent dark:border-slate-800 transition-colors duration-150">
+            <div class="flex justify-between px-4 md:px-0">
+                <h2 class="text-xl md:text-3xl text-gray-650 dark:text-slate-100 font-semibold">{{ lang.text['trending_offers'] }}</h2>
+                <button
+                    class="text-blue-600 dark:text-blue-400 py-1 font-semibold text-base px-4 rounded-full border border-gray-500 dark:border-slate-700 hover:shadow-lg transition">{{ lang.text['view_all'] }}</button>
+            </div>
+            <div class="flex text-white gap-6 overflow-auto pl-4 md:pl-0">
+                <!-- offer card one  -->
+                <div class="h-36 w-64 rounded-xl bg-gradient-to-r from-blue-800 to-blue-500 flex p-3 cursor-pointer flex-shrink-0">
+                    <div class="h-full grid place-content-center px-2">
+                        <img class="rounded-full w-24" src="./assets/offer1.png" alt="">
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <p class="text-xs px-1 py-[1px] bg-[#ffffff4c] rounded-full w-10 grid place-content-center">BUS</p>
+                        <h3 class="font-bold text-base leading-5">Save up to Rs 250 on bus tickets</h3>
+                        <p class="text-xs">Valid till 30 Nov</p>
+                        <div class="flex gap-3 items-center">
+                            <p class="grid place-content-center bg-[#ffffff4c] h-6 font-semibold px-2 rounded-sm border border-dashed border-white text-xs">FIRST</p>
+                            <i class="fa-regular fa-copy text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- offer card two  -->
+                <div class="h-36 w-64 rounded-xl bg-gradient-to-r from-red-800 to-red-500 flex p-3 cursor-pointer flex-shrink-0">
+                    <div class="h-full grid place-content-center px-2">
+                        <img class="rounded-full w-24" src="./assets/offer2.png" alt="">
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <p class="text-xs px-1 py-[1px] bg-[#ffffff4c] rounded-full w-10 grid place-content-center">BUS</p>
+                        <h3 class="font-bold text-base leading-5">Save up to Rs 300 on AP, TS routes</h3>
+                        <p class="text-xs">Valid till 30 Nov</p>
+                        <div class="flex gap-3 items-center">
+                            <p class="grid place-content-center bg-[#ffffff4c] h-6 font-semibold px-2 rounded-sm border border-dashed border-white text-xs">SUPERHIT</p>
+                            <i class="fa-regular fa-copy text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- offer card three  -->
+                <div class="h-36 w-64 rounded-xl bg-gradient-to-r from-green-800 to-green-500 flex p-3 cursor-pointer flex-shrink-0">
+                    <div class="h-full grid place-content-center px-2">
+                        <img class="rounded-full w-24" src="./assets/offer3.png" alt="">
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <p class="text-xs px-1 py-[1px] bg-[#ffffff4c] rounded-full w-10 grid place-content-center">BUS</p>
+                        <h3 class="font-bold text-base leading-5">Save up to Rs 300 on RJ,MH, Goa, MP,</h3>
+                        <p class="text-xs">Valid till 30 Nov</p>
+                        <div class="flex gap-3 items-center">
+                            <p class="grid place-content-center bg-[#ffffff4c] h-6 font-semibold px-2 rounded-sm border border-dashed border-white text-xs">BUS300</p>
+                            <i class="fa-regular fa-copy text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- offer card four  -->
+                <div class="h-36 w-64 rounded-xl bg-gradient-to-r from-sky-800 to-sky-500 flex p-3 cursor-pointer flex-shrink-0">
+                    <div class="h-full grid place-content-center px-2">
+                        <img class="rounded-full w-24" src="./assets/offer4.png" alt="">
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <p class="text-xs px-1 py-[1px] bg-[#ffffff4c] rounded-full w-10 grid place-content-center">BUS</p>
+                        <h3 class="font-bold text-base leading-5">Save up to Rs 200 in Kerala routes.</h3>
+                        <p class="text-xs">Valid till 30 Nov</p>
+                        <div class="flex gap-3 items-center">
+                            <p class="grid place-content-center bg-[#ffffff4c] h-6 font-semibold px-2 rounded-sm border border-dashed border-white text-xs">RBTRIP</p>
+                            <i class="fa-regular fa-copy text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==============================================
+     PREMIUM TRAVEL COMMUNITY BANNER SECTION
+     ============================================== -->
+<section class="flex justify-center mb-16 relative">
+    <div class="w-[90%] md:w-[83%] max-w-[1400px] bg-gradient-to-br from-slate-900 via-slate-800 to-red-950 rounded-3xl overflow-hidden shadow-2xl relative border border-slate-700/50 p-8 md:p-12">
+        <div class="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-red-600/10 blur-[100px] pointer-events-none"></div>
+        <div class="absolute -bottom-20 -left-20 w-80 h-80 rounded-full bg-blue-600/10 blur-[100px] pointer-events-none"></div>
+
+        <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <!-- Left Info column -->
+            <div class="lg:col-span-5 text-white">
+                <span class="text-xs uppercase font-extrabold tracking-widest text-red-500 bg-red-500/10 border border-red-500/20 px-3.5 py-1.5 rounded-full shadow-sm">
+                    ✨ {{ lang.text['community'] }}
+                </span>
+                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mt-4 leading-tight">
+                    RedBus Co-Traveler Community
+                </h2>
+                <p class="text-gray-300 text-sm md:text-base mt-4 leading-relaxed font-light">
+                    Join thousands of verified travelers sharing real-time route updates, road safety tips, sleeper bus reviews, and visual logs of their journeys.
+                </p>
+                <div class="flex items-center gap-6 mt-6 text-xs md:text-sm text-gray-400">
+                    <div class="flex flex-col">
+                        <span class="text-2xl font-bold text-white">15K+</span>
+                        <span>Stories Logged</span>
+                    </div>
+                    <div class="h-8 w-[1px] bg-slate-700"></div>
+                    <div class="flex flex-col">
+                        <span class="text-2xl font-bold text-white">45+</span>
+                        <span>Bus Operators Rated</span>
+                    </div>
+                </div>
+                <div class="mt-8">
+                    <a routerLink="/community" class="inline-flex items-center gap-2 bg-red-600 text-white font-bold px-6 py-3.5 rounded-2xl hover:bg-red-700 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 shadow-lg shadow-red-600/20 cursor-pointer">
+                        <i class="fa-solid fa-people-group"></i>
+                        {{ lang.text['write_tab'] }}
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right Showcase cards column -->
+            <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6 relative">
+                <!-- Promo Card 1 -->
+                <div class="bg-slate-800/80 backdrop-blur-md rounded-2xl border border-slate-700 p-6 flex flex-col justify-between hover:-translate-y-1 hover:border-slate-600 transition-all duration-300">
+                    <div>
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-md">
+                                Route Advice
+                            </span>
+                            <span class="text-[10px] text-slate-500">Updated 2h ago</span>
+                        </div>
+                        <h3 class="font-bold text-white text-base leading-snug">
+                            Delhi to Shimla Highway Road Closures & Sleeper bus reviews
+                        </h3>
+                        <p class="text-slate-400 text-xs mt-2 leading-relaxed line-clamp-3">
+                            The bypass road near Solan is currently under maintenance. Highly recommend choosing Volvo sleeper buses departing before 10 PM to bypass heavy early-morning congestion...
+                        </p>
+                    </div>
+                    <div class="flex items-center justify-between border-t border-slate-700/50 pt-4 mt-4 text-[10px] text-slate-400">
+                        <span class="flex items-center gap-1.5 font-medium">
+                            <i class="fa-solid fa-circle-check text-yellow-500"></i>
+                            Ananya Sharma
+                        </span>
+                        <span class="flex items-center gap-1"><i class="fa-solid fa-heart text-red-500"></i> 142 Likes</span>
+                    </div>
+                </div>
+
+                <!-- Promo Card 2 -->
+                <div class="bg-slate-800/80 backdrop-blur-md rounded-2xl border border-slate-700 p-6 flex flex-col justify-between hover:-translate-y-1 hover:border-slate-600 transition-all duration-300">
+                    <div>
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-md">
+                                Travel Tip
+                            </span>
+                            <span class="text-[10px] text-slate-500">Updated 5h ago</span>
+                        </div>
+                        <h3 class="font-bold text-white text-base leading-snug">
+                            Top 5 Scenic Pitstops on the Mumbai-Goa NH66 Route
+                        </h3>
+                        <p class="text-slate-400 text-xs mt-2 leading-relaxed line-clamp-3">
+                            Make sure to request your driver for a brief stop near Chiplun. The river-view restaurant offers amazing local Maharashtrian breakfast snacks, and the scenery is absolutely stunning...
+                        </p>
+                    </div>
+                    <div class="flex items-center justify-between border-t border-slate-700/50 pt-4 mt-4 text-[10px] text-slate-400">
+                        <span class="flex items-center gap-1.5 font-medium">
+                            <i class="fa-solid fa-circle-check text-yellow-500"></i>
+                            Kabir Malhotra
+                        </span>
+                        <span class="flex items-center gap-1"><i class="fa-solid fa-heart text-red-500"></i> 89 Likes</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="flex justify-center my-20 md:my-40">
+    <div class="flex flex-col w-full px-6 md:px-0 md:w-[80%] max-w-[1300px]">
+        <h1 class="text-gray-700 dark:text-slate-200 text-2xl md:text-[2.5rem] mb-6 md:mb-12 font-bold tracking-tight">{{ lang.text['faq_title'] }}</h1>
+
+        <!-- faq navigation buttons starts here  -->
+        <div class="flex gap-6 text-sm md:text-base lg:text-lg border-b border-gray-200 dark:border-slate-800 pb-3">
+            <span class="py-2 px-2 border-b-[3px] border-main-color text-main-color font-semibold cursor-pointer">{{ lang.text['general'] }}</span>
+            <span class="py-2 px-2 hover:border-b-[3px] border-gray-300 dark:hover:border-slate-700 text-slate-655 dark:text-slate-400 cursor-pointer">{{ lang.text['ticket_related'] }}</span>
+            <span class="py-2 px-2 hover:border-b-[3px] border-gray-300 dark:hover:border-slate-700 text-slate-655 dark:text-slate-400 cursor-pointer">{{ lang.text['payment'] }}</span>
+            <span class="py-2 px-2 hover:border-b-[3px] border-gray-300 dark:hover:border-slate-700 text-slate-655 dark:text-slate-400 cursor-pointer">{{ lang.text['cancellation_refund'] }}</span>
+            <span class="py-2 px-2 hover:border-b-[3px] border-gray-300 dark:hover:border-slate-700 text-slate-655 dark:text-slate-400 cursor-pointer">{{ lang.text['insurance'] }}</span>
+        </div>
+        <!-- faq navigation buttons ends here  -->
+
+        <!-- faq ans starts here  -->
+        <div class="flex flex-col gap-6 md:gap-10 mt-11">
+            <!-- 1st faq  -->
+            <div class="p-4 md:p-7 cursor-pointer bg-white dark:bg-slate-900 group hover:bg-slate-100 dark:hover:bg-slate-800/80 rounded-2xl border border-gray-100 dark:border-slate-800 transition">
+                <div class="flex md:text-base text-sm justify-between items-center font-semibold gap-2 text-slate-800 dark:text-slate-200">
+                    <h3>Can I track the location of my booked bus online?</h3>
+                    <i class="fa-solid fa-plus inline-block group-hover:hidden"></i>
+                    <i class="fa-solid fa-minus hidden group-hover:inline-block"></i>
+                </div>
+                <div class="text-xs md:text-sm mt-6 hidden group-hover:block text-slate-600 dark:text-slate-400 leading-relaxed">
+                    <p>Yes, you can track your <strong>bus online</strong> by using our bus tracking app feature called
+                        <a class="text-blue-500">Track My Bus</a>. This feature allows passengers and their families to
+                        track the live bus tracking location. You may follow your bus on a map and use the information
+                        to plan your trip to the boarding point and to get off at the correct stop.</p>
+                </div>
+            </div>
+
+            <div class="p-4 md:p-7 cursor-pointer bg-white dark:bg-slate-900 group hover:bg-slate-100 dark:hover:bg-slate-800/80 rounded-2xl border border-gray-100 dark:border-slate-800 transition">
+                <div class="flex md:text-base text-sm justify-between items-center font-semibold gap-2 text-slate-800 dark:text-slate-200">
+                    <h3>Why book bus tickets online on tedbus?</h3>
+                    <i class="fa-solid fa-plus inline-block group-hover:hidden"></i>
+                    <i class="fa-solid fa-minus hidden group-hover:inline-block"></i>
+                </div>
+                <div class="text-xs md:text-sm mt-6 hidden group-hover:block text-slate-600 dark:text-slate-400 leading-relaxed">
+                    <p>Tedbus offers a convenient, user-friendly ticket platform with a wide selection of bus operators, routes, instant payments, live tracking, and verified reviews to ensure a safe, smooth travel booking journey.</p>
+                </div>
+            </div>
+
+            <div class="p-4 md:p-7 cursor-pointer bg-white dark:bg-slate-900 group hover:bg-slate-100 dark:hover:bg-slate-800/80 rounded-2xl border border-gray-100 dark:border-slate-800 transition">
+                <div class="flex md:text-base text-sm justify-between items-center font-semibold gap-2 text-slate-800 dark:text-slate-200">
+                    <h3>Do I need to create an account on the tedbus site to book my bus ticket?</h3>
+                    <i class="fa-solid fa-plus inline-block group-hover:hidden"></i>
+                    <i class="fa-solid fa-minus hidden group-hover:inline-block"></i>
+                </div>
+                <div class="text-xs md:text-sm mt-6 hidden group-hover:block text-slate-600 dark:text-slate-400 leading-relaxed">
+                    <p>Creating an account helps you track bookings, request cancellations, access premium community forums, manage your notifications, and complete your payments faster with secure stored preferences.</p>
+                </div>
+            </div>
+        </div>
+        <!-- faq ans ends here  -->
+    </div>
+</section>

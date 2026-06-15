@@ -1,0 +1,175 @@
+<div class="payment__fullContainer text-slate-800 dark:text-slate-200 transition-colors duration-150">
+    <!-- left Container -->
+    <div class="payment__fullContainer_leftContainer">
+        <input class="payment__fullContainer_rightContainer_inputOfferCOde bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 dark:text-white" [placeholder]="lang.text['enter_offer_code']" />
+        <div class="payment__fullContainer_rightContainer_infobar bg-white dark:bg-slate-900 border border-dashed border-gray-200 dark:border-slate-800">
+            <div class="banner_chip">
+                <img src="https://s3.rdbuz.com/Images/webplatform/Common/Payment/safe-payments.svg" alt="CC" />
+                <div class="banner_text dark:text-slate-350">
+                    <div>{{ lang.text['safe_secure'] }}</div>
+                    <div>{{ lang.text['online_payments'] }}</div>
+                </div>
+            </div>
+            <div class="banner_chip">
+                <img src="https://s3.rdbuz.com/Images/webplatform/Common/Payment/transactions.svg"
+                    alt="Million Transactions" />
+                <div class="banner_text dark:text-slate-350">
+                    <div>{{ lang.text['million_trans'] }}</div>
+                    <div>{{ lang.text['transactions'] }}</div>
+                </div>
+            </div>
+            <div class="banner_chip">
+                <img src="https://s3.rdbuz.com/Images/webplatform/Common/Payment/trust.svg" alt="Reliable" />
+                <div class="banner_text dark:text-slate-350">
+                    <div>{{ lang.text['years_trust'] }}</div>
+                    <div>{{ lang.text['trust'] }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="payment__fullContainer_leftContainer_paymentInstruments">
+            <!-- Payment methods -->
+            <div class="Payment__stripe">
+                <button class="Payment__stripe__button hover:opacity-90" (click)="makepayment()">{{ lang.text['pay_with_stripe'] }}</button>
+            </div>
+            <!-- Other Payment Methods -->
+            <div class="choose_payment_heading text-slate-800 dark:text-slate-100">{{ lang.text['choose_other_payment'] }}</div>
+            <div class="payment__fullContainer_leftContainer_paymentInstrument bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800">
+                <!-- Credit Card -->
+                <div class="payment__fullContainer_leftContainer_eachPaymentInstruments bg-transparent border-b border-gray-150 dark:border-slate-800">
+                    <input class="radioButton text-red-500 focus:ring-red-500 bg-transparent border-gray-300 dark:border-slate-700" type="radio" />
+                    <div class="radioButtonText dark:text-slate-300">{{ lang.text['credit_card'] }}</div>
+                    <div class="paymentIconList">
+                        <img class="payment_icon_img" src="https://st.redbus.in/paas/images/mobile/v2/visa.png"
+                            alt="" />
+                        <img class="payment_icon_img" src="https://st.redbus.in/paas/images/mobile/v2/mastercard.png"
+                            alt="" />
+                        <img class="payment_icon_img" src="https://st.redbus.in/paas/images/web/v2/maestro.png"
+                            alt="" />
+                    </div>
+                </div>
+                <!-- Debit Card -->
+                <div class="payment__fullContainer_leftContainer_eachPaymentInstruments bg-transparent border-b border-gray-150 dark:border-slate-800">
+                    <input class="radioButton text-red-500 focus:ring-red-500 bg-transparent border-gray-300 dark:border-slate-700" type="radio" />
+                    <div class="radioButtonText dark:text-slate-300">{{ lang.text['debit_card'] }}</div>
+                    <div class="paymentIconList">
+                        <img class="payment_icon_img" src="https://st.redbus.in/paas/images/mobile/v2/visa.png"
+                            alt="" />
+                        <img class="payment_icon_img" src="https://st.redbus.in/paas/images/mobile/v2/mastercard.png"
+                            alt="" />
+                        <img class="payment_icon_img" src="https://st.redbus.in/paas/images/web/v2/maestro.png"
+                            alt="" />
+                    </div>
+                </div>
+                <!-- Wallets -->
+                <div class="payment__fullContainer_leftContainer_eachPaymentInstruments bg-transparent border-b border-gray-150 dark:border-slate-800">
+                    <input class="radioButton text-red-500 focus:ring-red-500 bg-transparent border-gray-300 dark:border-slate-700" type="radio" />
+                    <div class="radioButtonText dark:text-slate-300">{{ lang.text['wallets'] }}</div>
+                    <img class="payment_icon_img" src="https://st.redbus.in/paas/images/web/v2/amazonpay.png" alt="" />
+                </div>
+                <!-- Net Banking -->
+                <div class="payment__fullContainer_leftContainer_eachPaymentInstruments bg-transparent">
+                    <input class="radioButton text-red-500 focus:ring-red-500 bg-transparent border-gray-300 dark:border-slate-700" type="radio" />
+                    <div class="radioButtonText dark:text-slate-300">{{ lang.text['net_banking'] }}</div>
+                    <div class="paymentIconList">
+                        <img class="payment_icon_img" src="https://st.redbus.in/paas/images/web/v2/axis.png" alt="" />
+                        <img class="payment_icon_img" src="https://st.redbus.in/paas/images/web/v2/sbi.png" alt="" />
+                        <img class="payment_icon_img" src="https://st.redbus.in/paas/images/web/v2/hdfc.png" alt="" />
+                        <img class="payment_icon_img" src="https://st.redbus.in/paas/images/web/v2/icici.png" alt="" />
+                        <img class="payment_icon_img" src="https://st.redbus.in/paas/images/web/v2/kotak.png" alt="" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="UpiPaymentText text-slate-500 dark:text-slate-400 font-bold">{{ lang.text['upi_payment_msg'] }}</div>
+        <div class="payment__fullContainer_leftContainer_paymentInstrument bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800">
+            <!-- UPI payment methods -->
+            <div class="payment__fullContainer_leftContainer_eachPaymentInstruments bg-transparent border-b border-gray-150 dark:border-slate-800">
+                <input class="radioButton text-red-500 focus:ring-red-500 bg-transparent border-gray-300 dark:border-slate-700" type="radio" />
+                <div class="radioButtonText dark:text-slate-300">{{ lang.text['pay_qr'] }}</div>
+                <div class="payment__fullContainer_leftContainer_eachPaymentInstruments_new">{{ lang.text['new_label'] }}</div>
+                <div class="paymentIconList">
+                    <img class="payment_icon_img" src="https://st.redbus.in/paas/images/web/v2/upi/gpay.svg" alt="" />
+                    <img class="payment_icon_img" src="https://st.redbus.in/paas/images/web/v2/upi/phonepe.svg"
+                        alt="" />
+                    <img class="payment_icon_img" src="https://st.redbus.in/paas/images/web/v2/upi/amazonpay.svg"
+                        alt="" />
+                </div>
+            </div>
+            <!-- Pay through UPI ID -->
+            <div class="payment__fullContainer_leftContainer_eachPaymentInstruments bg-transparent">
+                <input class="radioButton text-red-500 focus:ring-red-500 bg-transparent border-gray-300 dark:border-slate-700" type="radio" />
+                <div class="radioButtonText dark:text-slate-300">{{ lang.text['pay_upi_id'] }}</div>
+                <div class="payment__fullContainer_leftContainer_eachPaymentInstruments_new">{{ lang.text['new_label'] }}</div>
+                <div class="paymentIconList">
+                    <img class="payment_icon_img" src="https://st.redbus.in/paas/images/web/v2/upi/gpay.svg" alt="" />
+                    <img class="payment_icon_img" src="https://st.redbus.in/paas/images/web/v2/upi/phonepe.svg"
+                        alt="" />
+                    <img class="payment_icon_img" src="https://st.redbus.in/paas/images/web/v2/upi/amazonpay.svg"
+                        alt="" />
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="payment__fullContainer_rightContainer">
+        <div class="payment__fullContainer_rightContainer_trip_container bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800">
+          <div class="travel_operator_info mb-4">
+            <div class="travel_title text-red-600 font-bold text-sm">{{ operatorname }}</div>
+            <div class="travel_specification text-[10px] text-gray-400">Seater / A/C / Sleeper</div>
+          </div>
+          <div class="line border-b border-gray-150 dark:border-slate-800 mb-4"></div>
+          <div style="display: flex; justify-content: space-between;">
+            <div style="display: flex; justify-content: space-between; width: 200px;">
+              <mat-icon class="icons text-gray-500 dark:text-slate-400">date_range</mat-icon>
+              <div style="display: flex; flex-direction: column;" class="ml-2">
+                <div class="travel_specification font-bold">{{ lang.text['booking_date'] }}</div>
+                <div style="display: flex; width: 150px;" class="text-xs">
+                  <div>{{ bookingdate | date: 'yyyy-MM-dd' }}</div>
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; margin-right: 10px;" class="text-xs">
+              <div class="font-bold text-gray-500">{{ lang.text['seats_booked'] }}</div>
+              <div class="font-semibold">{{ passseatarray }}</div>
+            </div>
+          </div>
+          <div class="line border-b border-gray-150 dark:border-slate-800 my-4"></div>
+          <div style="display: flex; justify-content: space-between;" class="text-xs">
+            <div style="display: flex; gap-2; width: 150px;">
+              <mat-icon class="icons text-gray-500 dark:text-slate-400">location_on</mat-icon>
+              <div style="display: flex; flex-direction: column;">
+                <div class="travel_specification font-bold">{{ lang.text['boarding_point'] }}</div>
+                <div class="font-semibold">{{ routedetails.departureLocation.name }}</div>                
+                <div class="text-[10px] text-gray-500">{{ bookingdate }}</div>
+                <div class="font-bold">{{ busdepauturetime }}:00</div> 
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column;">
+              <div class="travel_specification font-bold">{{ lang.text['dropping_point'] }}</div>
+              <div class="font-semibold">{{ routedetails.arrivalLocation.name }}</div> 
+              <div class="text-[10px] text-gray-500">{{ bookingdate }}</div>
+              <div class="font-bold">{{ busarrivaltime }}:00</div>
+            </div>
+          </div>
+          <div class="passangerInfo flex items-center gap-2 mt-4 p-3 bg-red-50 dark:bg-red-950/20 rounded-lg">
+            <mat-icon class="icons text-red-500">account_box</mat-icon>
+            <div class="passangerName text-xs font-semibold">{{ customerid.name }}</div>
+          </div>
+        </div>
+        <div class="payment__fullContainer_rightContainer_fair_container bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 my-6">
+          <div style="display: flex; justify-content: space-between;" class="border-b border-gray-100 dark:border-slate-800 pb-2 mb-3">
+            <div class="travel_title text-xs font-bold">{{ lang.text['fare_breakup'] }}</div>
+            <img src="https://s3.rdbuz.com/Images/webplatform/Common/Payment/down.svg" width="14" height="14" alt="">
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+            <div class="travel_specification text-xs" style="font-weight: bold;">{{ lang.text['total_payable'] }}</div>
+            <div class="travel_specification text-xs font-extrabold text-slate-900 dark:text-white">Rs. {{passfare}}</div>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: space-around; margin-top: 10px; width: 95%; opacity: 0.8;">
+          <img class="payment_banner_icon_img" src="https://s3.rdbuz.com/Images/webplatform/Common/Payment/master-card-secure-code.png" alt="">
+          <img class="payment_banner_icon_img" src="https://s3.rdbuz.com/Images/webplatform/Common/Payment/verified-by-visa.svg" alt="">
+          <img class="payment_banner_icon_img" src="https://s3.rdbuz.com/Images/webplatform/Common/Payment/verisign-secured.png" alt="">
+        </div>
+      </div>
+</div>

@@ -1,0 +1,27 @@
+/* My Trip Component - Redesigned CSS */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; max-height: 0; }
+  to { opacity: 1; max-height: 300px; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.trip-card {
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.trip-card:hover {
+  transform: translateY(-1px);
+}
+
+.passenger-accordion {
+  animation: slideDown 0.25s ease-out;
+  overflow: hidden;
+}

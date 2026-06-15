@@ -1,0 +1,532 @@
+<!-- community.component.html -->
+<div class="min-h-screen bg-gray-50 dark:bg-slate-950 pb-20 text-slate-800 dark:text-slate-200 transition-colors duration-150">
+  
+  <!-- Hero Section -->
+  <div class="relative overflow-hidden bg-gradient-to-r from-red-800 to-red-600 py-16 text-white text-center shadow-lg">
+    <div class="absolute inset-0 bg-cover bg-center opacity-15" style="background-image: url('assets/hero-img.png');"></div>
+    <div class="relative z-10 max-w-4xl mx-auto px-4">
+      <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 animate-fade-in">RedBus Travel Community</h1>
+      <p class="text-lg md:text-xl font-light text-red-100 max-w-2xl mx-auto">
+        Share your journeys, exchange route schedules, discover travel tips, and connect with fellow adventurers across India.
+      </p>
+    </div>
+  </div>
+
+  <!-- Tab Navbar & Status Check -->
+  <div class="max-w-6xl mx-auto px-4 mt-8">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <!-- Tabs -->
+      <div class="flex border-b md:border-b-0 border-gray-200 dark:border-slate-800 overflow-x-auto whitespace-nowrap scrollbar-none pb-2 md:pb-0 gap-2">
+        <button (click)="activeTab = 'stories'"
+                [class]="activeTab === 'stories' ? 'bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 font-semibold border-b-2 border-red-600 md:border-b-0' : 'text-gray-500 hover:text-gray-800 dark:text-slate-400 dark:hover:text-slate-250'"
+                class="px-5 py-2.5 rounded-xl text-sm md:text-base transition-all duration-200 flex items-center gap-2">
+          <i class="fa-solid fa-book-open"></i>
+          {{ lang.text['stories_tab'] }}
+        </button>
+        <button (click)="activeTab = 'forums'"
+                [class]="activeTab === 'forums' ? 'bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 font-semibold border-b-2 border-red-600 md:border-b-0' : 'text-gray-500 hover:text-gray-800 dark:text-slate-400 dark:hover:text-slate-250'"
+                class="px-5 py-2.5 rounded-xl text-sm md:text-base transition-all duration-200 flex items-center gap-2">
+          <i class="fa-solid fa-comments"></i>
+          {{ lang.text['forums_tab'] }}
+        </button>
+        <button (click)="activeTab = 'write'"
+                [class]="activeTab === 'write' ? 'bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 font-semibold border-b-2 border-red-600 md:border-b-0' : 'text-gray-500 hover:text-gray-800 dark:text-slate-400 dark:hover:text-slate-250'"
+                class="px-5 py-2.5 rounded-xl text-sm md:text-base transition-all duration-200 flex items-center gap-2">
+          <i class="fa-solid fa-pen-to-square"></i>
+          {{ lang.text['write_tab'] }}
+        </button>
+      </div>
+
+      <!-- User Verification Badge Status -->
+      <div class="flex items-center gap-3" *ngIf="isLoggedIn">
+        <div class="flex items-center gap-2 bg-gray-100 dark:bg-slate-800 px-3.5 py-1.5 rounded-full text-xs md:text-sm text-gray-700 dark:text-slate-300">
+          <img class="w-6 h-6 rounded-full border border-gray-300 dark:border-slate-700 object-cover" [src]="currentUser.profilepicture" alt="">
+          <span>{{ currentUser.name }}</span>
+        </div>
+        
+        <span *ngIf="isVerified" class="inline-flex items-center gap-1 bg-yellow-50 dark:bg-yellow-950/30 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-900/50 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider shadow-sm animate-pulse">
+          <i class="fa-solid fa-circle-check"></i>
+          Gold Verified
+        </span>
+        <span *ngIf="!isVerified" class="inline-flex items-center gap-1 bg-gray-100 dark:bg-slate-850 text-gray-600 dark:text-slate-400 border border-gray-200 dark:border-slate-800 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">
+          <i class="fa-solid fa-triangle-exclamation text-amber-500"></i>
+          Unverified User
+        </span>
+      </div>
+      <div *ngIf="!isLoggedIn">
+        <a routerLink="/login" class="text-sm font-medium text-red-600 dark:text-red-400 hover:underline">Log in to unlock posting & comments</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="max-w-6xl mx-auto px-4 mt-8">
+
+    <!-- ==============================================
+         TAB 1: STORIES / FEED
+         ============================================== -->
+    <div *ngIf="activeTab === 'stories'" class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      
+      <!-- Filter Sidebar -->
+      <div class="lg:col-span-1">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 p-6 sticky top-24">
+          <h3 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4">Categories</h3>
+          <div class="flex flex-col gap-1">
+            <button (click)="selectCategory('')"
+                    [class]="selectedCategory === '' ? 'bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 font-semibold' : 'text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800'"
+                    class="w-full text-left px-4 py-2.5 rounded-xl text-sm transition-all duration-150 flex items-center justify-between">
+              <span>{{ lang.text['all_categories'] }}</span>
+              <i class="fa-solid fa-chevron-right text-xs opacity-50"></i>
+            </button>
+            <button *ngFor="let cat of categories"
+                    (click)="selectCategory(cat)"
+                    [class]="selectedCategory === cat ? 'bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 font-semibold' : 'text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800'"
+                    class="w-full text-left px-4 py-2.5 rounded-xl text-sm transition-all duration-150 flex items-center justify-between">
+              <span>{{ cat }}</span>
+              <i class="fa-solid fa-chevron-right text-xs opacity-50"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feed Container -->
+      <div class="lg:col-span-3">
+        <!-- Spinner -->
+        <div *ngIf="loadingPosts" class="flex flex-col items-center py-20">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+          <p class="text-gray-400 text-sm mt-4">Loading journey feed...</p>
+        </div>
+
+        <!-- Empty Feed -->
+        <div *ngIf="!loadingPosts && posts.length === 0" class="bg-white dark:bg-slate-900 rounded-2xl p-16 text-center shadow-sm border border-gray-100 dark:border-slate-800">
+          <i class="fa-solid fa-hourglass-empty text-5xl text-gray-300 dark:text-slate-600 mb-4"></i>
+          <h3 class="text-lg font-bold text-gray-700 dark:text-slate-200">No stories found</h3>
+          <p class="text-gray-400 text-sm mt-1">Be the first to share a bus travel story on this platform!</p>
+          <button (click)="activeTab = 'write'" class="mt-6 bg-red-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-red-700 transition shadow-md">
+            Write a Story
+          </button>
+        </div>
+
+        <!-- Feed List -->
+        <div *ngIf="!loadingPosts && posts.length > 0" class="flex flex-col gap-6">
+          <div *ngFor="let post of posts" class="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-slate-800 hover:shadow-md transition-all duration-200">
+            
+            <!-- Post Header -->
+            <div class="p-6 pb-4 flex items-center justify-between border-b border-gray-50 dark:border-slate-800/80">
+              <div class="flex items-center gap-3">
+                <img class="w-11 h-11 rounded-full border dark:border-slate-800 object-cover" [src]="post.authorAvatar || 'https://ui-avatars.com/api/?name=' + (post.authorName || 'User')" alt="">
+                <div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="font-bold text-gray-800 dark:text-slate-100 text-sm md:text-base">{{ post.authorName }}</span>
+                    <!-- Verified Badges -->
+                    <span *ngIf="post.author?.verificationBadge === 'gold' || post.author?.isProfileVerified" class="text-yellow-500" title="Gold Creator Badge">
+                      <i class="fa-solid fa-circle-check text-xs"></i>
+                    </span>
+                    <span *ngIf="post.author?.verificationBadge === 'silver'" class="text-gray-400" title="Silver Creator Badge">
+                      <i class="fa-solid fa-circle-check text-xs"></i>
+                    </span>
+                  </div>
+                  <span class="text-xs text-gray-400 font-light">{{ post.createdAt | date:'mediumDate' }}</span>
+                </div>
+              </div>
+              
+              <!-- Category Badge -->
+              <span class="bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30 text-[10px] uppercase font-bold tracking-wider px-3 py-1 rounded-full shadow-sm">
+                {{ post.category }}
+              </span>
+            </div>
+
+            <!-- Cover Image (If available) -->
+            <div *ngIf="post.coverImage" class="h-64 md:h-80 w-full overflow-hidden relative">
+              <img class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500" [src]="post.coverImage" alt="">
+            </div>
+
+            <!-- Post Details -->
+            <div class="p-6">
+              <h2 class="text-xl md:text-2xl font-bold text-gray-800 dark:text-slate-150 hover:text-red-600 dark:hover:text-red-400 transition duration-150 cursor-pointer">
+                {{ post.title }}
+              </h2>
+              <p class="text-gray-650 dark:text-slate-300 text-sm md:text-base mt-3 leading-relaxed whitespace-pre-line">
+                {{ post.content }}
+              </p>
+              
+              <!-- Tags -->
+              <div class="flex flex-wrap gap-2 mt-4" *ngIf="post.tags?.length > 0">
+                <span *ngFor="let tag of post.tags" class="text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30 px-2.5 py-1 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/40 transition cursor-pointer">
+                  #{{ tag }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Action Bar -->
+            <div class="px-6 py-4 bg-gray-50 dark:bg-slate-850/30 flex items-center justify-between border-t border-gray-100 dark:border-slate-800/80 text-sm font-semibold text-gray-600 dark:text-slate-400">
+              <div class="flex items-center gap-6">
+                <!-- Like Button -->
+                <button (click)="likePost(post)" [class.text-red-600]="post.liked" class="flex items-center gap-1.5 hover:text-red-600 transition group">
+                  <i class="fa-solid fa-heart group-hover:scale-125 transition"></i>
+                  <span>{{ post.likesCount || 0 }} {{ lang.text['likes'] }}</span>
+                </button>
+
+                <!-- Comment Button -->
+                <button (click)="toggleComments(post._id)" class="flex items-center gap-1.5 hover:text-blue-600 transition group">
+                  <i class="fa-solid fa-message group-hover:scale-125 transition"></i>
+                  <span>{{ post.commentsCount || 0 }} {{ lang.text['comments'] }}</span>
+                </button>
+              </div>
+
+              <div class="flex items-center gap-4">
+                <!-- Share Button -->
+                <button (click)="openShare(post)" class="flex items-center gap-1.5 hover:text-green-600 transition group">
+                  <i class="fa-solid fa-share group-hover:scale-125 transition"></i>
+                  <span>{{ lang.text['share'] }}</span>
+                </button>
+                <!-- Report Button -->
+                <button (click)="openReport(post._id)" class="hover:text-amber-600 transition" title="Report Post">
+                  <i class="fa-solid fa-flag"></i>
+                </button>
+                <!-- Delete Button (Admin/Moderator/Author) -->
+                <button *ngIf="canDeletePost(post)" (click)="deletePost(post._id)" class="text-red-500 hover:text-red-700 transition" title="Delete Story">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Comments Drawer -->
+            <div *ngIf="activeCommentsPostId === post._id" class="border-t border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 animate-slide-down">
+              <h3 class="font-bold text-gray-700 dark:text-slate-300 text-sm mb-4">{{ lang.text['comments'] }}</h3>
+              
+              <!-- Comments Spinner -->
+              <div *ngIf="loadingComments" class="flex justify-center py-4">
+                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-red-600"></div>
+              </div>
+
+              <!-- Comments List -->
+              <div *ngIf="!loadingComments" class="flex flex-col gap-4 max-h-80 overflow-y-auto mb-4 pr-2">
+                <p *ngIf="comments.length === 0" class="text-xs text-gray-400 italic">No comments yet. Be the first to share your thoughts!</p>
+                <div *ngFor="let comment of comments" class="flex gap-3 text-sm border-b border-gray-50 dark:border-slate-800/50 pb-3 last:border-b-0">
+                  <img class="w-8 h-8 rounded-full object-cover" [src]="comment.authorAvatar || 'https://ui-avatars.com/api/?name=' + (comment.authorName || 'Commenter')" alt="">
+                  <div class="flex-1 bg-gray-50 dark:bg-slate-850 p-3 rounded-2xl">
+                    <div class="flex items-center justify-between">
+                      <span class="font-bold text-gray-800 dark:text-slate-200">{{ comment.authorName }}</span>
+                      <span class="text-[10px] text-gray-400 dark:text-slate-500">{{ comment.createdAt | date:'shortTime' }}</span>
+                    </div>
+                    <p class="text-gray-650 dark:text-slate-350 text-xs mt-1">{{ comment.content }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Comment Input Form -->
+              <div class="flex gap-2 items-center" *ngIf="isLoggedIn">
+                <input type="text" [(ngModel)]="newCommentText" placeholder="Write a comment..." class="flex-1 outline-none border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-white rounded-full px-4 py-2 text-sm focus:border-red-500 transition duration-150">
+                <button (click)="addComment(post._id)" class="bg-red-600 text-white rounded-full w-9 h-9 flex items-center justify-center hover:bg-red-700 transition shadow-sm">
+                  <i class="fa-solid fa-paper-plane text-xs"></i>
+                </button>
+              </div>
+              <div *ngIf="!isLoggedIn" class="text-xs text-gray-400 italic">
+                <a routerLink="/login" class="text-red-500 underline">Log in</a> to write comments.
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div *ngIf="!loadingPosts && totalPages > 1" class="flex items-center justify-center gap-4 mt-8">
+          <button (click)="prevPage()" [disabled]="page === 1" class="px-4 py-2 border dark:border-slate-800 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition disabled:opacity-40">Previous</button>
+          <span class="text-sm font-semibold text-gray-600">Page {{ page }} of {{ totalPages }}</span>
+          <button (click)="nextPage()" [disabled]="page === totalPages" class="px-4 py-2 border dark:border-slate-800 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition disabled:opacity-40">Next</button>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ==============================================
+         TAB 2: DISCUSSION BOARDS (FORUMS)
+         ============================================== -->
+    <div *ngIf="activeTab === 'forums'" class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 p-6 md:p-8">
+      
+      <!-- Back Button -->
+      <div *ngIf="activeForum" class="mb-6 flex items-center justify-between">
+        <button (click)="activeForum = null; threads = []" class="flex items-center gap-2 text-sm text-red-600 hover:text-red-700 font-semibold transition">
+          <i class="fa-solid fa-arrow-left"></i>
+          Back to Forums
+        </button>
+        <button (click)="showCreateThreadForm = !showCreateThreadForm" class="bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-red-700 transition shadow-sm flex items-center gap-1.5">
+          <i class="fa-solid fa-plus"></i>
+          {{ showCreateThreadForm ? 'Hide Form' : 'Start Discussion' }}
+        </button>
+      </div>
+
+      <!-- Forums List -->
+      <div *ngIf="!activeForum">
+        <h2 class="text-xl md:text-2xl font-bold text-gray-800 dark:text-slate-100 mb-6">Select a Forum Topic</h2>
+        <div *ngIf="loadingForums" class="flex justify-center py-12">
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
+        </div>
+        
+        <div *ngIf="!loadingForums && forums.length === 0" class="text-center py-12 text-gray-400">
+          No forums registered yet. Check backend seeder status.
+        </div>
+
+        <div *ngIf="!loadingForums" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div *ngFor="let forum of forums" (click)="selectForum(forum)" class="border border-gray-100 dark:border-slate-800 rounded-2xl p-6 hover:border-red-300 hover:shadow-md cursor-pointer transition-all duration-200 flex gap-4 bg-white dark:bg-slate-850">
+            <div class="bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 rounded-2xl w-14 h-14 flex items-center justify-center text-2xl flex-shrink-0">
+              <i class="fa-solid fa-comments"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-gray-800 dark:text-slate-150 text-lg group-hover:text-red-600 transition">{{ forum.title }}</h3>
+              <p class="text-gray-500 dark:text-slate-400 text-xs md:text-sm mt-1 leading-relaxed">{{ forum.description }}</p>
+              <div class="flex items-center gap-4 mt-3 text-xs text-gray-400">
+                <span><i class="fa-solid fa-file-invoice mr-1"></i> {{ forum.threadsCount || 0 }} Threads</span>
+                <span>Category: <strong class="text-gray-600 dark:text-slate-300 font-semibold">{{ forum.category }}</strong></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Threads List & Create Form -->
+      <div *ngIf="activeForum">
+        <div class="mb-6 pb-6 border-b border-gray-100 dark:border-slate-800">
+          <h2 class="text-2xl font-bold text-gray-800 dark:text-white">{{ activeForum.title }}</h2>
+          <p class="text-gray-500 dark:text-slate-400 text-sm mt-1">{{ activeForum.description }}</p>
+        </div>
+
+        <!-- Create Thread Form -->
+        <div *ngIf="showCreateThreadForm" class="bg-gray-50 dark:bg-slate-850 rounded-2xl p-6 border border-gray-100 dark:border-slate-800 mb-8 animate-slide-down text-slate-800 dark:text-slate-200">
+          <h3 class="font-bold text-gray-700 dark:text-slate-200 text-base mb-4">Start a Discussion Thread</h3>
+          
+          <div *ngIf="threadSuccessMessage" class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl mb-4 text-sm">{{ threadSuccessMessage }}</div>
+          <div *ngIf="threadErrorMessage" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-4 text-sm">{{ threadErrorMessage }}</div>
+
+          <form [formGroup]="threadForm" (ngSubmit)="submitThread()" class="flex flex-col gap-4">
+            <div>
+              <label class="block text-sm font-semibold text-gray-655 dark:text-slate-300 mb-1.5">Thread Title</label>
+              <input type="text" formControlName="title" placeholder="What is the topic of discussion?" class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-800 dark:text-white transition duration-150">
+              <span *ngIf="threadForm.get('title')?.touched && threadForm.get('title')?.invalid" class="text-xs text-red-500 mt-1 block">Title is required (min 5 chars).</span>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-semibold text-gray-655 dark:text-slate-300 mb-1.5">Content Details</label>
+              <textarea formControlName="content" rows="4" placeholder="Elaborate details for discussion..." class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-800 dark:text-white transition duration-150"></textarea>
+              <span *ngIf="threadForm.get('content')?.touched && threadForm.get('content')?.invalid" class="text-xs text-red-500 mt-1 block">Content is required (min 10 chars).</span>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-gray-655 dark:text-slate-300 mb-1.5">Tags (comma separated)</label>
+              <input type="text" formControlName="tags" placeholder="e.g. schedules, price, route-safety" class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-800 dark:text-white transition duration-150">
+            </div>
+
+            <div class="flex justify-end gap-3 mt-2">
+              <button type="button" (click)="showCreateThreadForm = false" class="px-5 py-2.5 border dark:border-slate-700 rounded-xl text-sm font-medium hover:bg-gray-100 dark:hover:bg-slate-800 transition">Cancel</button>
+              <button type="submit" [disabled]="submittingPost" class="bg-red-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-red-700 transition shadow-md disabled:opacity-50">
+                Publish Thread
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Threads Spinner -->
+        <div *ngIf="loadingThreads" class="flex justify-center py-12">
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
+        </div>
+
+        <div *ngIf="!loadingThreads && threads.length === 0" class="text-center py-12 text-gray-400 italic">
+          No discussion threads started yet. Be the first to start a conversation!
+        </div>
+
+        <!-- Threads List -->
+        <div *ngIf="!loadingThreads && threads.length > 0" class="flex flex-col gap-4">
+          <div *ngFor="let th of threads" class="border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-2xl p-5 hover:bg-gray-50 dark:hover:bg-slate-850 hover:border-gray-200 transition duration-150">
+            <h3 class="font-bold text-gray-800 dark:text-slate-100 text-base md:text-lg mb-2">{{ th.title }}</h3>
+            <p class="text-gray-650 dark:text-slate-300 text-xs md:text-sm leading-relaxed whitespace-pre-line">{{ th.content }}</p>
+            <div class="flex flex-wrap items-center justify-between gap-3 mt-4 border-t border-gray-50 dark:border-slate-800/60 pt-3 text-xs text-gray-400">
+              <div class="flex items-center gap-3">
+                <span>Posted by: <strong class="text-gray-600 dark:text-slate-300">{{ th.authorName }}</strong></span>
+                <span>•</span>
+                <span>{{ th.createdAt | date:'medium' }}</span>
+              </div>
+              <div class="flex gap-1.5" *ngIf="th.tags?.length > 0">
+                <span *ngFor="let t of th.tags" class="bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 text-[10px] px-2 py-0.5 rounded-md uppercase font-semibold">
+                  {{ t }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ==============================================
+         TAB 3: WRITE A STORY
+         ============================================== -->
+    <div *ngIf="activeTab === 'write'" class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 p-6 md:p-8 max-w-3xl mx-auto">
+      
+      <!-- Call to Action (If not logged in) -->
+      <div *ngIf="!isLoggedIn" class="text-center py-12">
+        <i class="fa-solid fa-lock text-5xl text-gray-300 dark:text-slate-700 mb-4"></i>
+        <h2 class="text-xl font-bold text-gray-700 dark:text-slate-200">Account login required</h2>
+        <p class="text-gray-400 text-sm mt-1 max-w-sm mx-auto">You must log in to write travel stories, share route tips, and participate in verified travel logs.</p>
+        <a routerLink="/login" class="inline-block mt-6 bg-red-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-red-700 transition shadow-md">
+          Go to Login Page
+        </a>
+      </div>
+
+      <!-- Verification Requirement Box -->
+      <div *ngIf="isLoggedIn && !isVerified" class="text-center py-6">
+        <div class="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/30 rounded-2xl p-6 text-amber-800 dark:text-amber-400 max-w-md mx-auto mb-8 shadow-sm">
+          <i class="fa-solid fa-triangle-exclamation text-4xl text-amber-500 mb-3"></i>
+          <h3 class="font-bold text-lg">Verification Required</h3>
+          <p class="text-sm text-amber-700 dark:text-amber-300 mt-2 leading-relaxed">
+            To maintain safety and high-quality user-generated content, only verified creators are allowed to publish stories on our network.
+          </p>
+        </div>
+
+        <!-- Gold Creator Verification Bypass (Development Booster) -->
+        <div class="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-900/30 rounded-2xl p-8 max-w-lg mx-auto shadow-md text-yellow-800 dark:text-yellow-400">
+          <h3 class="font-extrabold text-xl text-yellow-800 dark:text-yellow-400 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-award text-2xl text-yellow-600"></i>
+            Demo Verification Badge Booster
+          </h3>
+          <p class="text-sm text-yellow-755 dark:text-yellow-300 mt-2 leading-relaxed">
+            Submit a simulated identity card link to immediately verify your creator account and receive a <strong>Gold Verification Badge</strong>.
+          </p>
+          <button (click)="instantVerify()" [disabled]="verifying" class="mt-6 bg-yellow-600 text-white font-bold px-6 py-3 rounded-xl text-sm hover:bg-yellow-700 transition shadow-md disabled:opacity-50 flex items-center justify-center gap-2 mx-auto">
+            <span *ngIf="verifying" class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
+            <i *ngIf="!verifying" class="fa-solid fa-circle-check"></i>
+            {{ verifying ? 'Verifying profile...' : 'Instantly Get Gold Verified' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Creator Form -->
+      <div *ngIf="isLoggedIn && isVerified">
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6">Write a Travel Story</h2>
+        
+        <div *ngIf="postSuccessMessage" class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl mb-4 text-sm">{{ postSuccessMessage }}</div>
+        <div *ngIf="postErrorMessage" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-4 text-sm">{{ postErrorMessage }}</div>
+
+        <form [formGroup]="postForm" (ngSubmit)="submitPost()" class="flex flex-col gap-5 text-slate-800 dark:text-slate-200">
+          <div>
+            <label class="block text-sm font-semibold text-gray-655 dark:text-slate-350 mb-1.5">Story Title</label>
+            <input type="text" formControlName="title" placeholder="Choose a catchy title for your journey log..." class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-800 dark:text-white transition duration-150">
+            <span *ngIf="postForm.get('title')?.touched && postForm.get('title')?.invalid" class="text-xs text-red-500 mt-1 block">Title is required (5-100 characters).</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-semibold text-gray-655 dark:text-slate-350 mb-1.5">Category</label>
+              <select formControlName="category" class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-800 dark:text-white transition duration-150">
+                <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-655 dark:text-slate-350 mb-1.5">Cover Image URL (Optional)</label>
+              <input type="text" formControlName="coverImage" placeholder="https://unsplash.com/your-image-url.jpg" class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-800 dark:text-white transition duration-150">
+              <span *ngIf="postForm.get('coverImage')?.touched && postForm.get('coverImage')?.invalid" class="text-xs text-red-500 mt-1 block">Please enter a valid HTTP/HTTPS URL.</span>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-gray-655 dark:text-slate-350 mb-1.5">Story Body</label>
+            <textarea formControlName="content" rows="8" placeholder="Share travel schedules, highlights, tips, boarding feedback, safety guidelines, and details of your journey..." class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-800 dark:text-white transition duration-150"></textarea>
+            <span *ngIf="postForm.get('content')?.touched && postForm.get('content')?.invalid" class="text-xs text-red-500 mt-1 block">Story content is required (min 20 characters).</span>
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-gray-655 dark:text-slate-350 mb-1.5">Tags (comma separated)</label>
+            <input type="text" formControlName="tags" placeholder="e.g. travel, delhi-to-manali, sleeper-bus, routes" class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-800 dark:text-white transition duration-150">
+          </div>
+
+          <button type="submit" [disabled]="submittingPost" class="mt-4 bg-red-600 text-white font-semibold py-3 rounded-xl hover:bg-red-700 transition shadow-md disabled:opacity-50 flex items-center justify-center gap-2">
+            <span *ngIf="submittingPost" class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
+            Publish Story
+          </button>
+        </form>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ==============================================
+     MODAL: SHARE POST SOCIAL LINKS
+     ============================================== -->
+<div *ngIf="showShareModal" class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center bg-black bg-opacity-50 animate-fade-in px-4">
+  <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 md:p-8 max-w-sm w-full shadow-2xl relative border border-gray-100 dark:border-slate-800 animate-scale-up text-slate-800 dark:text-slate-200">
+    <button (click)="closeShareModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-slate-300 transition">
+      <i class="fa-solid fa-xmark text-xl"></i>
+    </button>
+    <h3 class="font-extrabold text-gray-800 dark:text-white text-lg md:text-xl text-center mb-6">Share Story</h3>
+    <p class="text-xs text-gray-400 dark:text-slate-500 text-center mb-6 truncate font-light">{{ shareTitle }}</p>
+    
+    <div class="grid grid-cols-4 gap-4 justify-items-center mb-6">
+      <a [href]="shareLinks?.whatsapp" target="_blank" (click)="closeShareModal()" class="flex flex-col items-center gap-1.5 hover:scale-105 transition">
+        <div class="w-12 h-12 rounded-full bg-green-50 dark:bg-green-950/20 text-green-600 dark:text-green-400 flex items-center justify-center text-xl shadow-sm border border-green-100 dark:border-green-900/30">
+          <i class="fa-brands fa-whatsapp"></i>
+        </div>
+        <span class="text-xs font-semibold text-gray-600 dark:text-slate-400">WhatsApp</span>
+      </a>
+      <a [href]="shareLinks?.twitter" target="_blank" (click)="closeShareModal()" class="flex flex-col items-center gap-1.5 hover:scale-105 transition">
+        <div class="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-950/20 text-blue-500 dark:text-blue-400 flex items-center justify-center text-xl shadow-sm border border-blue-100 dark:border-blue-900/30">
+          <i class="fa-brands fa-twitter"></i>
+        </div>
+        <span class="text-xs font-semibold text-gray-600 dark:text-slate-400">Twitter</span>
+      </a>
+      <a [href]="shareLinks?.facebook" target="_blank" (click)="closeShareModal()" class="flex flex-col items-center gap-1.5 hover:scale-105 transition">
+        <div class="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400 flex items-center justify-center text-xl shadow-sm border border-blue-100 dark:border-blue-900/30">
+          <i class="fa-brands fa-facebook-f"></i>
+        </div>
+        <span class="text-xs font-semibold text-gray-600 dark:text-slate-400">Facebook</span>
+      </a>
+      <a [href]="shareLinks?.linkedin" target="_blank" (click)="closeShareModal()" class="flex flex-col items-center gap-1.5 hover:scale-105 transition">
+        <div class="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-950/20 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl shadow-sm border border-blue-100 dark:border-blue-900/30">
+          <i class="fa-brands fa-linkedin-in"></i>
+        </div>
+        <span class="text-xs font-semibold text-gray-600 dark:text-slate-400">LinkedIn</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ==============================================
+     MODAL: REPORT POST MODERATION
+     ============================================== -->
+<div *ngIf="showReportModal" class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center bg-black bg-opacity-50 animate-fade-in px-4">
+  <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl relative border border-gray-100 dark:border-slate-800 animate-scale-up text-slate-800 dark:text-slate-200">
+    <button (click)="closeReportModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-605 dark:hover:text-slate-300 transition">
+      <i class="fa-solid fa-xmark text-xl"></i>
+    </button>
+    <h3 class="font-bold text-gray-800 dark:text-white text-lg md:text-xl mb-4">Report Inappropriate Content</h3>
+    
+    <div class="flex flex-col gap-4">
+      <div>
+        <label class="block text-sm font-semibold text-gray-655 dark:text-slate-300 mb-1.5">Reason for reporting</label>
+        <select [(ngModel)]="reportReason" class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-800 dark:text-white transition duration-150">
+          <option value="Spam / Ad">Spam / Advertising</option>
+          <option value="Inappropriate Content">Inappropriate Content</option>
+          <option value="Harassment / Hate">Harassment / Hate Speech</option>
+          <option value="Fake / Plagiarism">Fake / Plagiarism</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-gray-655 dark:text-slate-300 mb-1.5">Detailed description (Optional)</label>
+        <textarea [(ngModel)]="reportDescription" rows="3" placeholder="Provide extra detail for moderation review..." class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-800 dark:text-white transition duration-150"></textarea>
+      </div>
+
+      <div class="flex justify-end gap-3 mt-4">
+        <button (click)="closeReportModal()" class="px-4 py-2.5 border dark:border-slate-700 rounded-xl text-sm font-semibold hover:bg-gray-100 dark:hover:bg-slate-800 transition">Cancel</button>
+        <button (click)="submitReport()" [disabled]="reporting" class="bg-red-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-red-700 transition shadow-md disabled:opacity-50 flex items-center gap-1.5">
+          <span *ngIf="reporting" class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
+          Submit Report
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

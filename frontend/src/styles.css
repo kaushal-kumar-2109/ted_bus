@@ -1,0 +1,58 @@
+/* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: #f8fafc;
+  color: #1e293b;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  background: transparent;
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+html.dark body {
+  background-color: #0b0f19;
+  color: #f1f5f9;
+}
+
+/* Angular Material Popup/Menu overrides in dark mode */
+html.dark .mat-mdc-menu-panel, 
+html.dark .mat-menu-panel {
+  background-color: #1e293b !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #334155 !important;
+}
+
+html.dark .mat-mdc-menu-item, 
+html.dark .mat-menu-item {
+  color: #e2e8f0 !important;
+}
+
+html.dark .mat-mdc-menu-item:hover, 
+html.dark .mat-menu-item:hover {
+  background-color: #334155 !important;
+}
+
+html.dark input::placeholder {
+  color: #94a3b8 !important;
+}
+
+html.dark select {
+  color-scheme: dark;
+}

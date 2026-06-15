@@ -1,0 +1,205 @@
+<!-- route-planner.component.html -->
+<div class="min-h-screen bg-gray-50 dark:bg-slate-900 pb-20 transition-colors duration-200">
+  
+  <!-- Header -->
+  <div class="bg-gradient-to-r from-red-800 to-red-600 py-12 text-white text-center shadow-md">
+    <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-2">{{ lang.text['route_planner_title'] }}</h1>
+    <p class="text-sm md:text-base font-light text-red-100">Plan complex itineraries, compare traffic congestions, and save routes.</p>
+  </div>
+
+  <!-- Traffic Alert Ticker -->
+  <div class="bg-amber-500 text-amber-950 font-semibold px-4 py-2 text-center text-xs md:text-sm shadow-sm flex items-center justify-center gap-2">
+    <i class="fa-solid fa-triangle-exclamation animate-pulse"></i>
+    <span class="animate-fade-in inline-block">{{ activeAlert }}</span>
+  </div>
+
+  <div class="max-w-6xl mx-auto px-4 mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <!-- Left inputs panel -->
+    <div class="lg:col-span-1 flex flex-col gap-6">
+      <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-slate-700/50">
+        <h3 class="font-bold text-gray-800 dark:text-white text-lg mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-map-location-dot text-red-500"></i>
+          Plan Journey
+        </h3>
+
+        <div class="flex flex-col gap-4">
+          <!-- Start location -->
+          <div>
+            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">{{ lang.text['from'] }}</label>
+            <select [(ngModel)]="startLocation" (change)="calculateRoutes()" class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-700 dark:text-white transition">
+              <option *ngFor="let city of availableCities" [value]="city">{{ city }}</option>
+            </select>
+          </div>
+
+          <!-- Waypoints list -->
+          <div *ngIf="waypoints.length > 0" class="flex flex-col gap-3">
+            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider">Waypoints</label>
+            <div *ngFor="let wp of waypoints; let i = index" class="flex items-center gap-2 animate-slide-down">
+              <select [ngModel]="wp" (ngModelChange)="updateWaypoint(i, $event)" class="flex-1 outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-700 dark:text-white transition">
+                <option value="">Select Stopover...</option>
+                <option *ngFor="let city of availableCities" [value]="city" [disabled]="city === startLocation || city === destination">{{ city }}</option>
+              </select>
+              <button (click)="removeWaypoint(i)" class="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/20 p-2 rounded-xl transition">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Add Waypoint Trigger -->
+          <div>
+            <button (click)="addWaypoint()" [disabled]="waypoints.length >= 3" class="w-full border border-dashed border-red-500/50 text-red-600 dark:text-red-400 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-red-50 dark:hover:bg-red-950/10 transition disabled:opacity-40 flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-circle-plus"></i>
+              {{ lang.text['waypoint'] }}
+            </button>
+          </div>
+
+          <!-- Destination -->
+          <div>
+            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">{{ lang.text['to'] }}</label>
+            <select [(ngModel)]="destination" (change)="calculateRoutes()" class="w-full outline-none border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 bg-white dark:bg-slate-700 dark:text-white transition">
+              <option *ngFor="let city of availableCities" [value]="city" [disabled]="city === startLocation">{{ city }}</option>
+            </select>
+          </div>
+
+          <button (click)="saveCurrentRoute()" class="mt-4 bg-red-600 text-white font-bold py-3 rounded-xl hover:bg-red-700 hover:scale-[1.01] active:scale-[0.99] transition shadow-md flex items-center justify-center gap-2">
+            <i class="fa-solid fa-bookmark"></i>
+            {{ lang.text['save_route'] }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Saved routes list -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-slate-700/50">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-bold text-gray-800 dark:text-white text-base">Saved Routes</h3>
+          <button *ngIf="savedRoutes.length > 0" (click)="clearSavedRoutes()" class="text-xs text-red-500 hover:underline">Clear All</button>
+        </div>
+        
+        <p *ngIf="savedRoutes.length === 0" class="text-xs italic text-gray-400 dark:text-slate-500">No saved routes yet. Tap "Save Route" to save templates.</p>
+        
+        <div *ngIf="savedRoutes.length > 0" class="flex flex-col gap-3 max-h-60 overflow-y-auto">
+          <div *ngFor="let saved of savedRoutes" (click)="loadRoute(saved)" class="p-3 border border-gray-100 dark:border-slate-700 hover:border-red-300 rounded-xl cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-750 transition flex items-center justify-between">
+            <div>
+              <div class="font-bold text-xs text-gray-700 dark:text-gray-200">{{ saved.start }} to {{ saved.end }}</div>
+              <div class="text-[10px] text-gray-400 mt-0.5">via {{ saved.waypoints.join(', ') || 'Direct' }} • {{ saved.distance }} km</div>
+            </div>
+            <i class="fa-solid fa-chevron-right text-[10px] text-gray-400"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center/Right Map & Comparison Column -->
+    <div class="lg:col-span-2 flex flex-col gap-6">
+      
+      <!-- SVG Vector Map Canvas -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-slate-700/50 flex flex-col items-center">
+        <h3 class="w-full font-bold text-gray-800 dark:text-white text-base mb-4 flex items-center justify-between">
+          <span>Interactive Route Map</span>
+          <span class="text-xs bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-gray-300 px-2.5 py-1 rounded-md font-semibold">Simulated Real-time Traffic</span>
+        </h3>
+        
+        <!-- Vector Map Drawing -->
+        <div class="relative w-full border border-slate-100 dark:border-slate-700 bg-slate-900 rounded-2xl overflow-hidden shadow-inner flex items-center justify-center p-4">
+          <svg class="w-full max-w-2xl h-80" viewBox="0 0 700 400" xmlns="http://www.w3.org/2000/svg">
+            <!-- Grid Lines -->
+            <defs>
+              <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff08" stroke-width="1"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)" />
+
+            <!-- Highlight route lines -->
+            <path *ngFor="let opt of routeOptions"
+                  [attr.d]="opt.pathD"
+                  fill="none"
+                  [attr.stroke]="opt.color"
+                  [attr.stroke-width]="selectedRoute?.id === opt.id ? '6' : '3'"
+                  [attr.stroke-opacity]="selectedRoute?.id === opt.id ? '1' : '0.2'"
+                  class="cursor-pointer transition-all duration-300"
+                  (click)="onRouteSelect(opt)" />
+
+            <!-- Congestion delay animation pulses along paths -->
+            <circle *ngIf="selectedRoute?.congestion === 'medium'" r="4" fill="#f59e0b">
+              <animateMotion [attr.path]="selectedRoute?.pathD" dur="4s" repeatCount="indefinite" />
+            </circle>
+            <circle *ngIf="selectedRoute?.congestion === 'high'" r="4" fill="#ef4444">
+              <animateMotion [attr.path]="selectedRoute?.pathD" dur="2s" repeatCount="indefinite" />
+            </circle>
+            <circle *ngIf="selectedRoute?.congestion === 'low'" r="4" fill="#10b981">
+              <animateMotion [attr.path]="selectedRoute?.pathD" dur="6s" repeatCount="indefinite" />
+            </circle>
+
+            <!-- Start City Node -->
+            <g transform="translate(50, 250)">
+              <circle r="12" fill="#d02b2b" class="animate-ping opacity-35" />
+              <circle r="7" fill="#d02b2b" />
+              <text y="-14" text-anchor="middle" fill="#fff" font-size="12" font-weight="bold">{{ startLocation }}</text>
+            </g>
+
+            <!-- Destination Node -->
+            <g transform="translate(650, 200)">
+              <circle r="12" fill="#d02b2b" class="animate-ping opacity-35" />
+              <circle r="7" fill="#d02b2b" />
+              <text y="-14" text-anchor="middle" fill="#fff" font-size="12" font-weight="bold">{{ destination }}</text>
+            </g>
+
+            <!-- Waypoint Nodes -->
+            <g *ngFor="let wp of waypoints; let i = index" [attr.transform]="'translate(' + (180 + i * 160) + ', 220)'">
+              <circle *ngIf="wp" r="6" fill="#f59e0b" />
+              <text *ngIf="wp" y="-12" text-anchor="middle" fill="#f59e0b" font-size="10" font-weight="semibold">{{ wp }}</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Route Comparisons Panel -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-slate-700/50">
+        <h3 class="font-bold text-gray-800 dark:text-white text-base mb-4">{{ lang.text['compare_routes'] }}</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div *ngFor="let opt of routeOptions"
+               (click)="onRouteSelect(opt)"
+               [class]="selectedRoute?.id === opt.id ? 'border-2 border-red-500 shadow-md ring-1 ring-red-500/10' : 'border border-gray-100 dark:border-slate-700 hover:border-gray-200'"
+               class="p-4 rounded-2xl cursor-pointer bg-white dark:bg-slate-850 transition duration-150 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <!-- Congestion Indicator -->
+                <span *ngIf="opt.congestion === 'low'" class="bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/30 text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded">
+                  Low Traffic
+                </span>
+                <span *ngIf="opt.congestion === 'medium'" class="bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-900/30 text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded">
+                  Moderate
+                </span>
+                <span *ngIf="opt.congestion === 'high'" class="bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30 text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded">
+                  Congested
+                </span>
+              </div>
+              <h4 class="font-bold text-gray-800 dark:text-white text-sm leading-snug">{{ opt.name }}</h4>
+            </div>
+
+            <div class="mt-4 border-t border-gray-50 dark:border-slate-700/40 pt-3 flex justify-between text-xs text-gray-400">
+              <div>
+                <span class="block text-gray-700 dark:text-gray-300 font-bold text-sm">{{ opt.distance }} km</span>
+                <span>{{ lang.text['distance'] }}</span>
+              </div>
+              <div class="text-right">
+                <span class="block text-gray-700 dark:text-gray-300 font-bold text-sm">{{ opt.duration }}h</span>
+                <span>{{ lang.text['travel_time'] }}</span>
+              </div>
+            </div>
+            
+            <div *ngIf="opt.delay > 0" class="text-[10px] text-amber-600 mt-2 font-medium">
+              <i class="fa-solid fa-clock mr-1"></i> Includes {{ opt.delay }} min delay
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

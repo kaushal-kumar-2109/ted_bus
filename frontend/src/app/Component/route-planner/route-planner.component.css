@@ -1,0 +1,37 @@
+/* route-planner.component.css */
+
+/* SVG path animation */
+path {
+  transition: stroke-width 0.3s ease, stroke-opacity 0.3s ease, stroke 0.3s ease;
+}
+
+svg {
+  filter: drop-shadow(0px 10px 20px rgba(0, 0, 0, 0.3));
+}
+
+circle {
+  transition: transform 0.2s ease;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Slide scrollbars */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

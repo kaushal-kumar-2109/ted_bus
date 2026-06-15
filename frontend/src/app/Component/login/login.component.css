@@ -1,0 +1,4 @@
+/* Custom styles for LoginComponent */
+input:focus {
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
+}

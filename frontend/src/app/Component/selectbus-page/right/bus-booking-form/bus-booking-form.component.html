@@ -1,0 +1,106 @@
+<div class="bus-booking-form bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl overflow-hidden text-slate-800 dark:text-slate-200 transition-colors duration-150">
+    <h4 class="passenger-main-title bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-bold border-b border-gray-150 dark:border-slate-800 py-3">{{ lang.text['enter_passenger_details'] }}</h4>
+    <div class="content-block-scroller bg-transparent" style="height: 400px; overflow-y: scroll; box-shadow: inset 0 -2px 5px rgba(0,0,0,0.05);">
+
+        <ng-container *ngFor="let seat of selectedseat; let index = index">
+            <div class="content-block bg-transparent md:bg-white md:dark:bg-slate-850 border-0 md:border border-gray-100 dark:border-slate-800 p-2 md:p-5 m-0 md:m-4 rounded-xl shadow-none md:shadow-sm">
+                <div class="passanger-info-title flex items-center gap-2 border-b border-gray-100 dark:border-slate-800 pb-2 mb-3">
+                    <i class="material-icons" style="font-size: 22px; color: teal;">account_circle</i>
+                    <span class="font-bold text-xs uppercase tracking-wider">{{ lang.text['passenger_info'] }}</span>
+                </div>
+                <div class="flex justify-between items-center text-xs font-bold text-gray-500 dark:text-slate-400 mb-4 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg">
+                    <h1>{{ lang.text['passenger'] }} {{index + 1}}</h1>
+                    <div style="height: 12px; background-color: silver; width: 1px;"></div>
+                    <h1>{{ lang.text['seat'] }} {{seat}}</h1>
+                </div>
+
+                <div class="form-label text-xs font-semibold text-slate-655 dark:text-slate-350 mb-1">{{ lang.text['name'] }}</div>
+                <div (change)="handlePassName($event,index)">
+                    <input class="form-input w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 text-sm bg-white dark:bg-slate-800 dark:text-white" placeholder="Name" type="text" name="name" />
+                </div>
+                <div class="grid grid-cols-2 gap-4 mt-3">
+                    <div class="flex flex-col">
+                        <div class="form-label text-xs font-semibold text-slate-655 dark:text-slate-350 mb-1">{{ lang.text['gender'] }}</div>
+                        <div class="flex items-center gap-4 py-2" (change)="handlePassGender($event,index)">
+                            <label class="flex items-center gap-1.5 text-xs cursor-pointer select-none">
+                                <input class="radio-button text-red-500 focus:ring-red-500 bg-transparent border-gray-300 dark:border-slate-700" type="radio" name="gender{{ index }}" value="Male" />
+                                <span>{{ lang.text['male'] }}</span>
+                            </label>
+                            <label class="flex items-center gap-1.5 text-xs cursor-pointer select-none">
+                                <input class="radio-button text-red-500 focus:ring-red-500 bg-transparent border-gray-300 dark:border-slate-700" type="radio" name="gender{{ index }}" value="Female" />
+                                <span>{{ lang.text['female'] }}</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="flex flex-col">
+                        <div class="form-label text-xs font-semibold text-slate-655 dark:text-slate-350 mb-1">{{ lang.text['age'] }}</div>
+                        <input class="form-input w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 text-sm bg-white dark:bg-slate-800 dark:text-white" placeholder="Age" type="text" name="age" (change)="handlePassAge($event,index)" />
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+
+    <div class="content-block bg-transparent md:bg-white md:dark:bg-slate-850 border-0 md:border border-gray-100 dark:border-slate-800 p-2 md:p-5 m-0 md:m-4 rounded-xl shadow-none md:shadow-sm">
+        <div class="passanger-info-title flex items-center gap-2 border-b border-gray-100 dark:border-slate-800 pb-2 mb-3">
+            <i class="material-icons text-amber-500" style="font-size: 22px;">email</i>
+            <span class="font-bold text-xs uppercase tracking-wider">{{ lang.text['contact_details'] }}</span>
+        </div>
+        <div class="passenger-contact-msg bg-yellow-50 dark:bg-yellow-950/20 text-yellow-800 dark:text-yellow-400 border border-yellow-100 dark:border-yellow-900/30 rounded-lg text-xs py-2 px-3 mb-4">
+            {{ lang.text['ticket_sent_msg'] }}
+        </div>
+        <div class="form-label text-xs font-semibold text-slate-655 dark:text-slate-350 mb-1">{{ lang.text['email'] }}</div>
+        <input class="form-input w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 text-sm bg-white dark:bg-slate-800 dark:text-white" placeholder="Email" type="email" name="email" [(ngModel)]="passemail" />
+        
+        <div class="form-label text-xs font-semibold text-slate-655 dark:text-slate-350 mb-1 mt-3">{{ lang.text['phone'] }}</div>
+        <div class="flex gap-2">
+            <input class="form-input px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-800 dark:text-white" placeholder="+91" type="text" style="width: 60px; color: #4f91d9;" />
+            <input class="form-input flex-1 px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 text-sm bg-white dark:bg-slate-800 dark:text-white" placeholder="Phone" type="number" name="phone" [(ngModel)]="passphn" />
+        </div>
+        
+        <div class="flex items-center gap-2.5 mt-4 text-xs text-slate-750 dark:text-slate-350">
+            <input type="checkbox" [(ngModel)]="passisbuisness" class="rounded border-gray-300 dark:border-slate-700 bg-transparent text-red-500 focus:ring-red-500" />
+            <div>{{ lang.text['business_travel_msg'] }}</div>
+        </div>
+        <div class="flex items-center gap-2.5 mt-3 text-xs text-slate-750 dark:text-slate-350">
+            <input type="checkbox" [(ngModel)]="sendupdates" class="rounded border-gray-300 dark:border-slate-700 bg-transparent text-red-500 focus:ring-red-500" />
+            <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24" class="text-green-600 dark:text-green-400">
+                <path fill="currentColor" d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91c0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.23 8.23 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23c-1.48 0-2.93-.39-4.19-1.15l-.3-.17l-3.12.82l.83-3.04l-.2-.32a8.2 8.2 0 0 1-1.26-4.38c.01-4.54 3.7-8.24 8.25-8.24M8.53 7.33c-.16 0-.43.06-.66.31c-.22.25-.87.86-.87 2.07c0 1.22.89 2.39 1 2.56c.14.17 1.76 2.67 4.25 3.73c.59.27 1.05.42 1.41.53c.59.19 1.13.16 1.56.1c.48-.07 1.46-.6 1.67-1.18s.21-1.07.15-1.18c-.07-.1-.23-.16-.48-.27c-.25-.14-1.47-.74-1.69-.82c-.23-.08-.37-.12-.56.12c-.16.25-.64.81-.78.97c-.15.17-.29.19-.53.07c-.26-.13-1.06-.39-2-1.23c-.74-.66-1.23-1.47-1.38-1.72c-.12-.24-.01-.39.11-.5c.11-.11.27-.29.37-.44c.13-.14.17-.25.25-.41c.08-.17.04-.31-.02-.43c-.06-.11-.56-1.35-.77-1.84c-.2-.48-.4-.42-.56-.43c-.14 0-.3-.01-.47-.01" />
+            </svg>
+            <div>{{ lang.text['whatsapp_updates_msg'] }}</div>
+        </div>
+
+        <div class="insure_title bg-amber-50 dark:bg-amber-950/20 text-amber-800 dark:text-amber-400 border border-amber-100 dark:border-amber-900/30 rounded-lg text-xs py-2.5 px-3 mt-4 font-semibold">
+            {{ lang.text['insurance_msg'] }}
+        </div>
+        <div class="grid grid-cols-2 gap-4 mt-3">
+            <div class="flex flex-col items-center text-center p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-gray-100 dark:border-slate-800">
+                <img src="https://s1.rdbuz.com/apps/images/india-acko-insurance/luggage.png" alt="insurance" class="w-6 h-6 mb-1.5" />
+                <div class="text-xs font-bold">{{ lang.text['loss_of_baggage'] }}</div>
+                <div class="text-[10px] text-gray-500 dark:text-slate-400 mt-0.5">{{ lang.text['baggage_cover'] }}</div>
+            </div>
+            <div class="flex flex-col items-center text-center p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-gray-100 dark:border-slate-800">
+                <img src="https://s1.rdbuz.com/apps/images/india-acko-insurance/accident.png" alt="insurance" class="w-6 h-6 mb-1.5" />
+                <div class="text-xs font-bold">{{ lang.text['personal_accident'] }}</div>
+                <div class="text-[10px] text-gray-500 dark:text-slate-400 mt-0.5">{{ lang.text['accident_cover'] }}</div>
+            </div>
+        </div>
+        <div class="flex gap-2.5 mt-4 text-xs text-slate-755 dark:text-slate-350">
+            <input type="checkbox" [(ngModel)]="passinsurance" class="rounded border-gray-300 dark:border-slate-700 bg-transparent text-red-500 focus:ring-red-500 mt-0.5" />
+            <div>{{ lang.text['secure_trip_checkbox'] }}</div>
+        </div>
+        <div class="flex items-center gap-2.5 mt-3 text-xs text-slate-755 dark:text-slate-350">
+            <input type="checkbox" class="rounded border-gray-300 dark:border-slate-700 bg-transparent text-red-500 focus:ring-red-500" />
+            <div>{{ lang.text['covid_donation'] }}</div>
+        </div>
+    </div>
+
+    <div class="content-block bg-transparent md:bg-white md:dark:bg-slate-850 border-0 md:border border-gray-100 dark:border-slate-800 p-2 md:p-5 m-0 md:m-4 rounded-xl shadow-none md:shadow-sm flex flex-col gap-4">
+        <div class="text-[11px] text-gray-500 dark:text-slate-400 leading-relaxed">
+            {{ lang.text['terms_agreement_msg'] }}
+        </div>
+        <button class="proceed_to_button w-full bg-red-600 hover:bg-red-750 text-white font-bold text-xs uppercase py-3 rounded-lg shadow transition" (click)="handleproceedtopay()">
+            {{ lang.text['proceed_to_pay'] }}
+        </button>
+    </div>
+</div>

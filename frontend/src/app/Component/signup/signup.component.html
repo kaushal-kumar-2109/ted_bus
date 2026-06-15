@@ -1,0 +1,151 @@
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 via-slate-100 to-red-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-200">
+  <div class="max-w-lg w-full space-y-8 bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-xl border border-gray-100 dark:border-slate-800 transform transition-all duration-300 hover:shadow-2xl text-slate-800 dark:text-slate-200">
+    
+    <!-- Header/Logo Area -->
+    <div class="text-center">
+      <img class="mx-auto h-12 w-auto" src="../../../assets/red-bus-with-word-bus-it_600323-482.avif" alt="Redbus Logo">
+      <h2 class="mt-6 text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+        {{ lang.text['create_account_title'] }}
+      </h2>
+      <p class="mt-2 text-sm text-gray-600 dark:text-slate-400">
+        {{ lang.text['already_have_account'] }}
+        <a routerLink="/login" class="font-medium text-red-600 hover:text-red-500 transition-colors duration-200">
+          {{ lang.text['sign_in_here'] }}
+        </a>
+      </p>
+    </div>
+
+    <!-- Alert Messages -->
+    <div *ngIf="errorMessage" class="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
+      <div class="flex">
+        <div class="ml-3">
+          <p class="text-sm font-medium text-red-800">{{ errorMessage }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="successMessage" class="bg-green-50 border-l-4 border-green-500 p-4 rounded-md">
+      <div class="flex">
+        <div class="ml-3">
+          <p class="text-sm font-medium text-green-800">{{ successMessage }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <form class="mt-8 space-y-5" [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+      
+      <!-- 2-Column Name Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- First Name -->
+        <div>
+          <label for="first-name" class="block text-sm font-medium text-gray-700 dark:text-slate-300">{{ lang.text['first_name'] }}</label>
+          <input id="first-name" type="text" formControlName="firstName"
+                 class="mt-1 appearance-none block w-full px-3 py-2.5 border border-gray-300 dark:border-slate-700 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm bg-white dark:bg-slate-800 dark:text-white transition-all duration-200"
+                 [class.border-red-300]="signupForm.get('firstName')?.touched && signupForm.get('firstName')?.invalid"
+                 placeholder="Arjun">
+          <span *ngIf="signupForm.get('firstName')?.touched && signupForm.get('firstName')?.invalid" class="text-xs text-red-500 mt-1 block">
+            Required (min 2 chars)
+          </span>
+        </div>
+
+        <!-- Last Name -->
+        <div>
+          <label for="last-name" class="block text-sm font-medium text-gray-700 dark:text-slate-300">{{ lang.text['last_name'] }}</label>
+          <input id="last-name" type="text" formControlName="lastName"
+                 class="mt-1 appearance-none block w-full px-3 py-2.5 border border-gray-300 dark:border-slate-700 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm bg-white dark:bg-slate-800 dark:text-white transition-all duration-200"
+                 [class.border-red-300]="signupForm.get('lastName')?.touched && signupForm.get('lastName')?.invalid"
+                 placeholder="Sharma">
+          <span *ngIf="signupForm.get('lastName')?.touched && signupForm.get('lastName')?.invalid" class="text-xs text-red-500 mt-1 block">
+            Required (min 2 chars)
+          </span>
+        </div>
+      </div>
+
+      <!-- Email Input -->
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-slate-300">{{ lang.text['email_address'] }}</label>
+        <input id="email" type="email" formControlName="email"
+               class="mt-1 appearance-none block w-full px-3 py-2.5 border border-gray-300 dark:border-slate-700 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm bg-white dark:bg-slate-800 dark:text-white transition-all duration-200"
+               [class.border-red-300]="signupForm.get('email')?.touched && signupForm.get('email')?.invalid"
+               placeholder="arjun@traveller.in">
+        <span *ngIf="signupForm.get('email')?.touched && signupForm.get('email')?.errors?.['required']" class="text-xs text-red-500 mt-1 block">
+          Email is required
+        </span>
+        <span *ngIf="signupForm.get('email')?.touched && signupForm.get('email')?.errors?.['email']" class="text-xs text-red-500 mt-1 block">
+          Enter a valid email
+        </span>
+      </div>
+
+      <!-- Phone Input -->
+      <div>
+        <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-slate-300">{{ lang.text['phone_number'] }}</label>
+        <input id="phone" type="text" formControlName="phone"
+               class="mt-1 appearance-none block w-full px-3 py-2.5 border border-gray-300 dark:border-slate-700 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm bg-white dark:bg-slate-800 dark:text-white transition-all duration-200"
+               [class.border-red-300]="signupForm.get('phone')?.touched && signupForm.get('phone')?.invalid"
+               placeholder="9876543201">
+        <span *ngIf="signupForm.get('phone')?.touched && signupForm.get('phone')?.errors?.['required']" class="text-xs text-red-500 mt-1 block">
+          Phone is required
+        </span>
+        <span *ngIf="signupForm.get('phone')?.touched && signupForm.get('phone')?.errors?.['pattern']" class="text-xs text-red-500 mt-1 block">
+          Must be a valid 10-digit Indian mobile number
+        </span>
+      </div>
+
+      <!-- Password Input -->
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700 dark:text-slate-300">{{ lang.text['password'] }}</label>
+        <input id="password" type="password" formControlName="password"
+               class="mt-1 appearance-none block w-full px-3 py-2.5 border border-gray-300 dark:border-slate-700 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm bg-white dark:bg-slate-800 dark:text-white transition-all duration-200"
+               [class.border-red-300]="signupForm.get('password')?.touched && signupForm.get('password')?.invalid"
+               placeholder="••••••••">
+        <span *ngIf="signupForm.get('password')?.touched && signupForm.get('password')?.errors?.['required']" class="text-xs text-red-500 mt-1 block">
+          Password is required
+        </span>
+        <span *ngIf="signupForm.get('password')?.touched && signupForm.get('password')?.errors?.['minlength']" class="text-xs text-red-500 mt-1 block">
+          Must be at least 6 characters
+        </span>
+      </div>
+
+      <!-- 2-Column Gender and Date of Birth -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Gender Select -->
+        <div>
+          <label for="gender" class="block text-sm font-medium text-gray-700 dark:text-slate-300">{{ lang.text['gender'] }}</label>
+          <select id="gender" formControlName="gender"
+                  class="mt-1 block w-full px-3 py-2.5 border border-gray-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 dark:text-white focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm transition-all duration-200">
+            <option value="male">{{ lang.text['male'] }}</option>
+            <option value="female">{{ lang.text['female'] }}</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <!-- Date of Birth -->
+        <div>
+          <label for="dob" class="block text-sm font-medium text-gray-700 dark:text-slate-300">{{ lang.text['date_of_birth'] }}</label>
+          <input id="dob" type="date" formControlName="dateOfBirth"
+                 class="mt-1 block w-full px-3 py-2.5 border border-gray-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 dark:text-white focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm transition-all duration-200"
+                 [class.border-red-300]="signupForm.get('dateOfBirth')?.touched && signupForm.get('dateOfBirth')?.invalid">
+          <span *ngIf="signupForm.get('dateOfBirth')?.touched && signupForm.get('dateOfBirth')?.invalid" class="text-xs text-red-500 mt-1 block">
+            Required
+          </span>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="pt-2">
+        <button type="submit" [disabled]="loading"
+                class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 transition-all duration-200 transform hover:scale-[1.01] active:scale-[0.99] font-semibold tracking-wide shadow-md">
+          <span *ngIf="loading" class="absolute left-0 inset-y-0 flex items-center pl-3">
+            <svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </span>
+          {{ loading ? lang.text['creating_account'] : lang.text['create_account'] }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
