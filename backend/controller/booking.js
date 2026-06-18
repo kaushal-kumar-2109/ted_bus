@@ -433,6 +433,24 @@ exports.confirmPayment = async (req, res) => {
             }
         }
 
+        // 1.5 Create in-app notification in database
+        if (booking.user) {
+            try {
+                const Notification = require("../models/notification");
+                await Notification.create({
+                    recipient: booking.user,
+                    type: "booking_confirmed",
+                    title: "Booking Confirmed! 🎉",
+                    message: `Your booking ${booking.bookingId} from ${booking.source?.city || "Source"} to ${booking.destination?.city || "Destination"} is confirmed!`,
+                    link: `/profile?tab=trips`,
+                    entityType: "booking",
+                    entityId: booking._id
+                });
+            } catch (notifyErr) {
+                console.error("Error creating booking confirmation notification:", notifyErr);
+            }
+        }
+
         // 2. Generate PDF ticket
         const { generateTicketPDF } = require("../utils/pdfGenerator");
         let pdfBuffer = null;

@@ -73,7 +73,10 @@ export class NavbarComponent implements OnInit {
 
   markRead(id: string): void {
     this.notify.markAsRead(id).subscribe({
-      next: () => this.fetchNotifications(),
+      next: () => {
+        this.fetchNotifications();
+        this.router.navigate(['/profile'], { queryParams: { tab: 'notifications' } });
+      },
       error: (err) => console.error('Error marking read', err)
     });
   }
