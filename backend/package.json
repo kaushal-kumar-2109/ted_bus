@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "main": "index.js",
   "description": "Professional RedBus Clone — Bus Booking & Community Platform API",
-  "author": "RedBus Clone Team",
+  "author": "Kishore kumar",
   "license": "ISC",
   "scripts": {
     "start": "node index.js",
