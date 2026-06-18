@@ -6,6 +6,15 @@ const smtpHost = process.env.SMTP_HOST || "smtp.gmail.com";
 const smtpPort = parseInt(process.env.SMTP_PORT || "465");
 const isSecure = smtpPort === 465;
 
+console.log("SMTP_HOST =", process.env.SMTP_HOST);
+console.log("SMTP_PORT =", process.env.SMTP_PORT);
+console.log("SMTP_USER =", process.env.SMTP_USER);
+console.log(
+  "SMTP_PASSWORD exists =",
+  !!process.env.SMTP_PASSWORD
+);
+console.log("Resend_api =", process.env.RESEND_API);
+
 const transporter = nodemailer.createTransport({
   host: smtpHost,
   port: smtpPort,
