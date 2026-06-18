@@ -92,6 +92,13 @@ export class NavbarComponent implements OnInit {
     });
   }
 
+  clearAll(): void {
+    this.notify.clearAllNotifications().subscribe({
+      next: () => this.fetchNotifications(),
+      error: (err) => console.error('Error clearing notifications', err)
+    });
+  }
+
   changeLanguage(langCode: string): void {
     this.lang.setLanguage(langCode);
   }

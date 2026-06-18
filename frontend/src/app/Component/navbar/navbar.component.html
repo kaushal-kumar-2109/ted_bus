@@ -97,6 +97,109 @@
 
         <!-- My Profile dropdown trigger if logged in -->
         <div class="flex items-center gap-3" *ngIf="isloggedIn">
+            <!-- Notifications Bell -->
+            <button [matMenuTriggerFor]="notificationMenu" (click)="fetchNotifications()"
+                class="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 text-slate-850 dark:text-slate-200 transition-colors duration-150 focus:outline-none"
+                title="Notifications">
+                <i class="fa-regular fa-bell text-xl"></i>
+                <!-- Unread Count Badge -->
+                <span *ngIf="unreadCount > 0" 
+                    class="absolute top-1.5 right-1.5 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-red-600 text-[9px] font-bold text-white ring-2 ring-white dark:ring-slate-900 animate-pulse">
+                    {{ unreadCount }}
+                </span>
+            </button>
+
+            <mat-menu #notificationMenu="matMenu" xPosition="before" class="notification-mat-menu dark:bg-slate-800 rounded-xl">
+                <div class="w-80 max-h-[450px] flex flex-col dark:bg-slate-800 overflow-hidden" (click)="$event.stopPropagation()">
+                    <!-- Dropdown Header -->
+                    <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50">
+                        <span class="font-bold text-sm text-slate-800 dark:text-white flex items-center gap-1.5">
+                            <i class="fa-solid fa-bell text-red-500"></i> Notifications
+                        </span>
+                        <button *ngIf="unreadCount > 0" (click)="markAllRead()" 
+                            class="text-[11px] font-semibold text-red-655 hover:text-red-750 dark:text-red-400 dark:hover:text-red-300 transition-colors focus:outline-none">
+                            Mark all read
+                        </button>
+                    </div>
+
+                    <!-- Scrollable List -->
+                    <div class="flex-1 overflow-y-auto max-h-[320px] divide-y divide-gray-50 dark:divide-slate-700/50">
+                        <ng-container *ngIf="notifications.length > 0; else emptyNotifications">
+                            <div *ngFor="let item of notifications" 
+                                (click)="markRead(item._id)"
+                                class="relative p-3.5 hover:bg-gray-50 dark:hover:bg-slate-700/40 transition-all duration-150 cursor-pointer flex gap-3 group"
+                                [ngClass]="{ 'bg-red-50/20': !item.isRead, 'dark:bg-red-950/5': !item.isRead }">
+                                
+                                <!-- Indicator for Unread -->
+                                <div *ngIf="!item.isRead" class="absolute top-4 left-1.5 w-1.5 h-1.5 bg-red-500 rounded-full"></div>
+                                
+                                <!-- Type Icon -->
+                                <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center"
+                                    [ngClass]="{
+                                        'bg-red-100 text-red-600 dark:bg-red-950/40 dark:text-red-400': item.type === 'booking_confirmed' || item.type === 'booking_cancelled' || item.type === 'system',
+                                        'bg-blue-100 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400': item.type === 'like_post' || item.type === 'comment_post',
+                                        'bg-amber-100 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400': item.type === 'post_featured' || item.type === 'verification_approved'
+                                    }">
+                                    <i class="fa-solid text-[13px]" 
+                                        [ngClass]="{
+                                            'fa-ticket': item.type === 'booking_confirmed',
+                                            'fa-triangle-exclamation': item.type === 'booking_cancelled',
+                                            'fa-gears': item.type === 'system',
+                                            'fa-heart': item.type === 'like_post',
+                                            'fa-comment': item.type === 'comment_post' || item.type === 'reply_comment',
+                                            'fa-star': item.type === 'post_featured',
+                                            'fa-circle-check': item.type === 'verification_approved',
+                                            'fa-bell': !['booking_confirmed', 'booking_cancelled', 'system', 'like_post', 'comment_post', 'reply_comment', 'post_featured', 'verification_approved'].includes(item.type)
+                                        }"></i>
+                                </div>
+
+                                <!-- Title & Message -->
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-xs font-semibold text-slate-800 dark:text-slate-100 truncate pr-4" [class.font-bold]="!item.isRead">
+                                        {{ item.title }}
+                                    </p>
+                                    <p class="text-[11px] text-slate-650 dark:text-slate-400 mt-0.5 line-clamp-2 leading-relaxed">
+                                        {{ item.message }}
+                                    </p>
+                                    <span class="text-[9px] text-gray-400 dark:text-slate-500 mt-1 block">
+                                        {{ item.createdAt | date:'shortTime' }} · {{ item.createdAt | date:'mediumDate' }}
+                                    </span>
+                                </div>
+
+                                <!-- Actions (Delete on hover) -->
+                                <div class="flex-shrink-0 flex flex-col justify-between items-end">
+                                    <button (click)="deleteNotification(item._id); $event.stopPropagation()" 
+                                        class="text-gray-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400 p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150 focus:outline-none"
+                                        title="Delete notification">
+                                        <i class="fa-regular fa-trash-can text-[11px]"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </ng-container>
+
+                        <ng-template #emptyNotifications>
+                            <div class="flex flex-col items-center justify-center py-12 px-4 text-center">
+                                <div class="w-12 h-12 rounded-full bg-gray-50 dark:bg-slate-700/30 flex items-center justify-center mb-3">
+                                    <i class="fa-regular fa-bell-slash text-xl text-gray-400 dark:text-slate-500"></i>
+                                </div>
+                                <h4 class="text-xs font-semibold text-slate-800 dark:text-slate-200">All caught up!</h4>
+                                <p class="text-[10px] text-gray-400 dark:text-slate-500 mt-1 max-w-[200px]">
+                                    You have no new notifications at the moment.
+                                </p>
+                            </div>
+                        </ng-template>
+                    </div>
+
+                    <!-- Footer -->
+                    <div *ngIf="notifications.length > 0" class="border-t border-gray-100 dark:border-slate-700 p-2 text-center bg-gray-50 dark:bg-slate-800/50">
+                        <button (click)="clearAll()" 
+                            class="text-[11px] font-bold text-gray-600 dark:text-slate-400 hover:text-red-655 dark:hover:text-red-400 transition-colors w-full py-1 focus:outline-none">
+                            Clear all notifications
+                        </button>
+                    </div>
+                </div>
+            </mat-menu>
+
             <button class="flex items-center justify-center gap-2 h-10 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-350 font-semibold focus:outline-none" [matMenuTriggerFor]="desktopProfileMenu">
                 <i class="fa-regular fa-circle-user text-lg"></i>
                 <span>My Profile</span>
@@ -214,6 +317,30 @@
             </div>
 
             <div class="h-[1px] bg-gray-100 dark:bg-slate-800 my-2"></div>
+            
+            <!-- Mobile Notifications Section -->
+            <ng-container *ngIf="isloggedIn">
+                <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-slate-500 px-3 mb-1">Notifications ({{ unreadCount }} unread)</p>
+                <div class="flex flex-col max-h-48 overflow-y-auto px-2 gap-1.5 divide-y divide-gray-100/50 dark:divide-slate-800">
+                    <ng-container *ngIf="notifications.length > 0; else mobileEmpty">
+                        <div *ngFor="let item of notifications" 
+                            (click)="markRead(item._id); closeMobileMenu()" 
+                            class="py-2 px-2 hover:bg-gray-50 dark:hover:bg-slate-800/60 rounded-md transition-colors flex gap-2.5 relative cursor-pointer"
+                            [ngClass]="{ 'bg-red-50/10': !item.isRead }">
+                            
+                            <div *ngIf="!item.isRead" class="w-1.5 h-1.5 bg-red-500 rounded-full mt-1.5 flex-shrink-0"></div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-xs font-semibold text-slate-850 dark:text-slate-200 truncate pr-2">{{ item.title }}</p>
+                                <p class="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">{{ item.message }}</p>
+                            </div>
+                        </div>
+                    </ng-container>
+                    <ng-template #mobileEmpty>
+                        <p class="text-xs text-gray-400 dark:text-slate-500 text-center py-3">No notifications</p>
+                    </ng-template>
+                </div>
+                <div class="h-[1px] bg-gray-100 dark:bg-slate-800 my-2"></div>
+            </ng-container>
             
             <!-- Account Section -->
             <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-slate-500 px-3 mb-1">Account</p>
