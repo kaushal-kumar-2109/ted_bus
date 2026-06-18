@@ -55,6 +55,21 @@ router.get("/unread-count", verifyToken, async (req, res) => {
 });
 
 // ──────────────────────────────────────────────
+// PUT /notifications/read-all
+// ──────────────────────────────────────────────
+router.put("/read-all", verifyToken, async (req, res) => {
+  try {
+    const result = await Notification.updateMany(
+      { recipient: req.userId, isRead: false },
+      { isRead: true, readAt: new Date() }
+    );
+    return success(res, { updated: result.modifiedCount }, "All notifications marked as read");
+  } catch (err) {
+    return error(res, "Error marking notifications read", 500, err.message);
+  }
+});
+
+// ──────────────────────────────────────────────
 // PUT /notifications/:id/read
 // ──────────────────────────────────────────────
 router.put("/:id/read", verifyToken, async (req, res) => {
@@ -72,17 +87,14 @@ router.put("/:id/read", verifyToken, async (req, res) => {
 });
 
 // ──────────────────────────────────────────────
-// PUT /notifications/read-all
+// DELETE /notifications/clear-all
 // ──────────────────────────────────────────────
-router.put("/read-all", verifyToken, async (req, res) => {
+router.delete("/clear-all", verifyToken, async (req, res) => {
   try {
-    const result = await Notification.updateMany(
-      { recipient: req.userId, isRead: false },
-      { isRead: true, readAt: new Date() }
-    );
-    return success(res, { updated: result.modifiedCount }, "All notifications marked as read");
+    const result = await Notification.deleteMany({ recipient: req.userId });
+    return success(res, { deleted: result.deletedCount }, "All notifications cleared");
   } catch (err) {
-    return error(res, "Error marking notifications read", 500, err.message);
+    return error(res, "Error clearing notifications", 500, err.message);
   }
 });
 
@@ -95,18 +107,6 @@ router.delete("/:id", verifyToken, async (req, res) => {
     return success(res, {}, "Notification deleted");
   } catch (err) {
     return error(res, "Error deleting notification", 500, err.message);
-  }
-});
-
-// ──────────────────────────────────────────────
-// DELETE /notifications/clear-all
-// ──────────────────────────────────────────────
-router.delete("/clear-all", verifyToken, async (req, res) => {
-  try {
-    const result = await Notification.deleteMany({ recipient: req.userId });
-    return success(res, { deleted: result.deletedCount }, "All notifications cleared");
-  } catch (err) {
-    return error(res, "Error clearing notifications", 500, err.message);
   }
 });
 
