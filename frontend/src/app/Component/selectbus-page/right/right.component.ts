@@ -13,7 +13,7 @@ export class RightComponent implements OnInit{
  matchedbus:Bus[]=[]
  routes:Route[]=[]
  seats:{[key:string]:any}={}
-
+ loading:boolean=false;
 
  departurevar:string=''
  arrival:string=''
@@ -33,14 +33,19 @@ export class RightComponent implements OnInit{
     this.arrival=arrival
     this.date=date
    });
-   this.busservice.GETBUSDETAILS(this.departurevar,this.arrival,this.date).subscribe((response:any)=>{
-    
-    this.matchedbus=response.matchedBuses;
-    this.routes=response.route;
-    this.seats=response.busidwithseatobj;
-    // console.log(this.routes)
+   this.loading = true;
+   this.busservice.GETBUSDETAILS(this.departurevar,this.arrival,this.date).subscribe({
+    next: (response:any)=>{
+      this.matchedbus=response.matchedBuses;
+      this.routes=response.route;
+      this.seats=response.busidwithseatobj;
+      this.loading = false;
+    },
+    error: (err)=>{
+      console.error('Error getting bus details', err);
+      this.loading = false;
+    }
    })
-
  }
 
 }

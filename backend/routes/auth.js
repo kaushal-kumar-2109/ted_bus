@@ -193,7 +193,7 @@ router.post("/forgot-password", authLimiter, async (req, res) => {
     // Send real email with reset link
     const resetUrl = `${process.env.APP_URL || "http://localhost:4200"}/reset-password/${resetToken}`;
     
-    await sendEmail({
+    sendEmail({
       to: email,
       subject: "RedBus Clone - Reset Your Password",
       html: `
@@ -208,6 +208,8 @@ router.post("/forgot-password", authLimiter, async (req, res) => {
           <p>Best regards,<br>The RedBus Clone Team</p>
         </div>
       `
+    }).catch(err => {
+      console.error("Forgot password SMTP failure:", err);
     });
 
     return success(res, {}, "Password reset link has been sent to your email.");

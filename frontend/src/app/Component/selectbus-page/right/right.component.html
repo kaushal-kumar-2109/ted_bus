@@ -1,4 +1,8 @@
-<div>
+<div *ngIf="loading" class="flex flex-col items-center justify-center py-24 text-slate-800 dark:text-slate-200">
+    <div class="animate-spin rounded-full h-14 w-14 border-t-2 border-b-2 border-red-600 mb-4"></div>
+    <p class="text-gray-400 text-sm animate-pulse">Searching for available buses...</p>
+</div>
+<div *ngIf="!loading">
     <app-sorting-bar></app-sorting-bar>
     <div *ngFor="let bus of matchedbus; index as i">
         <app-bus-box [rating]='bus.rating' [busid]="bus._id || ''" [operatorname]="bus.operatorName" [bustype]="bus.busType"

@@ -162,32 +162,30 @@ exports.addbooking = async (req, res) => {
             }
 
             for (const recipient of emailsToSend) {
-                try {
-                    await sendEmail({
-                        to: recipient,
-                        subject: `Booking Confirmed! ${bookingId}`,
-                        html: `
-                            <div style="font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 16px;">
-                                <h2 style="color: #d02b2b; text-align: center;">🎉 Booking Confirmation</h2>
-                                <p>Thank you for choosing RedBus. Your booking is confirmed! We have attached your official e-ticket PDF to this email.</p>
-                                <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-                                <table style="width: 100%; font-size: 14px; line-height: 24px;">
-                                    <tr><td><strong>Booking ID:</strong></td><td>${bookingId}</td></tr>
-                                    <tr><td><strong>Journey Type:</strong></td><td>${(type || "Bus").toUpperCase()}</td></tr>
-                                    <tr><td><strong>Route:</strong></td><td>${departureDetails?.city || "Source"} to ${arrivalDetails?.city || "Destination"}</td></tr>
-                                    <tr><td><strong>Date & Time:</strong></td><td>${departureDetails?.date || "Today"} at ${departureDetails?.time || "12"}:00 hrs</td></tr>
-                                    <tr><td><strong>Seats booked:</strong></td><td>${normalizedSeats.join(", ")}</td></tr>
-                                    <tr><td><strong>Total Fare paid:</strong></td><td>INR ${fare || 500}</td></tr>
-                                </table>
-                                <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-                                <p style="font-size: 12px; color: #888;">For dynamic schedules or cancellations, visit the My Trips section in your profile. You can also download the PDF ticket directly from the portal at any time.</p>
-                            </div>
-                        `,
-                        attachments: emailAttachments
-                    });
-                } catch (mailErr) {
+                sendEmail({
+                    to: recipient,
+                    subject: `Booking Confirmed! ${bookingId}`,
+                    html: `
+                        <div style="font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 16px;">
+                            <h2 style="color: #d02b2b; text-align: center;">🎉 Booking Confirmation</h2>
+                            <p>Thank you for choosing RedBus. Your booking is confirmed! We have attached your official e-ticket PDF to this email.</p>
+                            <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+                            <table style="width: 100%; font-size: 14px; line-height: 24px;">
+                                <tr><td><strong>Booking ID:</strong></td><td>${bookingId}</td></tr>
+                                <tr><td><strong>Journey Type:</strong></td><td>${(type || "Bus").toUpperCase()}</td></tr>
+                                <tr><td><strong>Route:</strong></td><td>${departureDetails?.city || "Source"} to ${arrivalDetails?.city || "Destination"}</td></tr>
+                                <tr><td><strong>Date & Time:</strong></td><td>${departureDetails?.date || "Today"} at ${departureDetails?.time || "12"}:00 hrs</td></tr>
+                                <tr><td><strong>Seats booked:</strong></td><td>${normalizedSeats.join(", ")}</td></tr>
+                                <tr><td><strong>Total Fare paid:</strong></td><td>INR ${fare || 500}</td></tr>
+                            </table>
+                            <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+                            <p style="font-size: 12px; color: #888;">For dynamic schedules or cancellations, visit the My Trips section in your profile. You can also download the PDF ticket directly from the portal at any time.</p>
+                        </div>
+                    `,
+                    attachments: emailAttachments
+                }).catch((mailErr) => {
                     console.error(`Mailer send failure to ${recipient} in checkout:`, mailErr);
-                }
+                });
             }
         }
 
@@ -302,7 +300,7 @@ exports.triggerSearchAbandonmentImmediate = async (req, res) => {
         });
 
         // Send email
-        await sendEmail({
+        sendEmail({
             to: user.email,
             subject: `Special Offer: Finish booking from ${source} to ${destination}!`,
             html: `
@@ -322,6 +320,8 @@ exports.triggerSearchAbandonmentImmediate = async (req, res) => {
                     <p>Click <a href="http://localhost:4200/" style="color: #d02b2b; font-weight: bold; text-decoration: none;">here</a> to return to the search list and finish booking.</p>
                 </div>
             `
+        }).catch((mailErr) => {
+            console.error("Search abandonment mailer failure:", mailErr);
         });
 
         res.status(200).json({ success: true, message: "Real-time search abandonment notification sent" });
@@ -363,7 +363,7 @@ exports.triggerPaymentAbandonmentImmediate = async (req, res) => {
             });
 
             // Send email
-            await sendEmail({
+            sendEmail({
                 to: user.email,
                 subject: `Urgent: Incomplete payment for booking ${booking.bookingId}`,
                 html: `
@@ -380,6 +380,8 @@ exports.triggerPaymentAbandonmentImmediate = async (req, res) => {
                         <p style="font-size: 11px; color: #888;">If you did not initiate this transaction, please ignore this email.</p>
                     </div>
                 `
+            }).catch((mailErr) => {
+                console.error("Payment abandonment mailer failure:", mailErr);
             });
 
             res.status(200).json({ success: true, message: "Real-time payment abandonment notification sent" });
@@ -464,32 +466,30 @@ exports.confirmPayment = async (req, res) => {
         }
 
         for (const recipient of emailsToSend) {
-            try {
-                await sendEmail({
-                    to: recipient,
-                    subject: `Booking Confirmed! ${booking.bookingId}`,
-                    html: `
-                        <div style="font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 16px;">
-                            <h2 style="color: #d02b2b; text-align: center;">🎉 Booking Confirmation</h2>
-                            <p>Thank you for choosing RedBus. Your booking is confirmed! We have attached your official e-ticket PDF to this email.</p>
-                            <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-                            <table style="width: 100%; font-size: 14px; line-height: 24px;">
-                                <tr><td><strong>Booking ID:</strong></td><td>${booking.bookingId}</td></tr>
-                                <tr><td><strong>Journey Type:</strong></td><td>BUS</td></tr>
-                                <tr><td><strong>Route:</strong></td><td>${booking.source?.city || "Source"} to ${booking.destination?.city || "Destination"}</td></tr>
-                                <tr><td><strong>Date & Time:</strong></td><td>${booking.journeyDate || "Today"} at ${booking.departureTime || "12"}:00 hrs</td></tr>
-                                <tr><td><strong>Seats booked:</strong></td><td>${booking.seats.join(", ")}</td></tr>
-                                <tr><td><strong>Total Fare paid:</strong></td><td>INR ${booking.totalFare || 500}</td></tr>
-                            </table>
-                            <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-                            <p style="font-size: 12px; color: #888;">For dynamic schedules or cancellations, visit the My Trips section in your profile. You can also download the PDF ticket directly from the portal at any time.</p>
-                        </div>
-                    `,
-                    attachments: emailAttachments
-                });
-            } catch (mailErr) {
-                console.error(`Mailer send failure to ${recipient} in checkout:`, mailErr);
-            }
+            sendEmail({
+                to: recipient,
+                subject: `Booking Confirmed! ${booking.bookingId}`,
+                html: `
+                    <div style="font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 16px;">
+                        <h2 style="color: #d02b2b; text-align: center;">🎉 Booking Confirmation</h2>
+                        <p>Thank you for choosing RedBus. Your booking is confirmed! We have attached your official e-ticket PDF to this email.</p>
+                        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+                        <table style="width: 100%; font-size: 14px; line-height: 24px;">
+                            <tr><td><strong>Booking ID:</strong></td><td>${booking.bookingId}</td></tr>
+                            <tr><td><strong>Journey Type:</strong></td><td>BUS</td></tr>
+                            <tr><td><strong>Route:</strong></td><td>${booking.source?.city || "Source"} to ${booking.destination?.city || "Destination"}</td></tr>
+                            <tr><td><strong>Date & Time:</strong></td><td>${booking.journeyDate || "Today"} at ${booking.departureTime || "12"}:00 hrs</td></tr>
+                            <tr><td><strong>Seats booked:</strong></td><td>${booking.seats.join(", ")}</td></tr>
+                            <tr><td><strong>Total Fare paid:</strong></td><td>INR ${booking.totalFare || 500}</td></tr>
+                        </table>
+                        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+                        <p style="font-size: 12px; color: #888;">For dynamic schedules or cancellations, visit the My Trips section in your profile. You can also download the PDF ticket directly from the portal at any time.</p>
+                    </div>
+                `,
+                attachments: emailAttachments
+            }).catch((mailErr) => {
+                console.error(`Mailer send failure to ${recipient} in confirmPayment:`, mailErr);
+            });
         }
 
         res.status(200).json(updatedBooking);

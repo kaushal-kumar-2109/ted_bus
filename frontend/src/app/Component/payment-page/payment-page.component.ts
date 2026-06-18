@@ -39,6 +39,7 @@ export class PaymentPageComponent implements OnInit, OnDestroy {
   isPreCreated: boolean = false;
   isProgressed: boolean = false;
   isTriggered: boolean = false;
+  loadingPayment: boolean = false;
   private routerSubscription!: Subscription;
 
   constructor(
@@ -221,8 +222,10 @@ export class PaymentPageComponent implements OnInit, OnDestroy {
   makepayment(): void {
     this.isProgressed = true; // Mark as progressed to prevent abandonment trigger
     if (this.bookingIdMongo) {
+      this.loadingPayment = true;
       this.busservice.confirmPayment(this.bookingIdMongo).subscribe({
         next: (response) => {
+          this.loadingPayment = false;
           console.log('Confirm payment success', response);
           alert('Booking completed successfully! Ticket details have been sent to your email.');
           this.router.navigate(['/profile'], { queryParams: { tab: 'trips' } });
@@ -230,11 +233,13 @@ export class PaymentPageComponent implements OnInit, OnDestroy {
         error: (error) => {
           console.error('Confirm payment failed', error);
           this.isProgressed = false;
+          this.loadingPayment = false;
           alert('Booking payment failed. Please try again.');
         }
       });
     } else {
       // Fallback
+      this.loadingPayment = true;
       let myBooking: any = {};
       myBooking.customerId = this.customerid._id || this.customerid.id;
       myBooking.passengerDetails = this.passengerdetails;
@@ -260,6 +265,7 @@ export class PaymentPageComponent implements OnInit, OnDestroy {
       myBooking.isCovidDonated = this.iscoviddonated;
       this.busservice.addbusmongo(myBooking).subscribe({
         next:(response)=>{
+          this.loadingPayment = false;
           console.log('Bus booking success',response);
           alert('Booking completed successfully! Ticket details have been sent to your email.');
           this.router.navigate(['/profile'], { queryParams: { tab: 'trips' } });
@@ -267,6 +273,7 @@ export class PaymentPageComponent implements OnInit, OnDestroy {
         error:(error)=>{
           console.error('Post request failed',error);
           this.isProgressed = false;
+          this.loadingPayment = false;
           alert('Booking payment failed. Please try again.');
         }
       })

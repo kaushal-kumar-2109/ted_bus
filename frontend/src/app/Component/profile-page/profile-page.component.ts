@@ -19,6 +19,7 @@ export class ProfilePageComponent implements OnInit{
   currentemail:string=''
   mytrip:Booking[]=[]
   isVerified:boolean = false;
+  loadingTrips:boolean = false;
 
   // Notification Preferences
   emailNotifications: boolean = true;
@@ -57,8 +58,16 @@ export class ProfilePageComponent implements OnInit{
         
         const userId = user._id || user.id;
         if (userId) {
-          this.busbooking.getbusmongo(userId).subscribe((response: any) => {
-            this.mytrip = response;
+          this.loadingTrips = true;
+          this.busbooking.getbusmongo(userId).subscribe({
+            next: (response: any) => {
+              this.mytrip = response;
+              this.loadingTrips = false;
+            },
+            error: (err) => {
+              console.error('Error getting trips', err);
+              this.loadingTrips = false;
+            }
           });
         }
       } catch (e) {

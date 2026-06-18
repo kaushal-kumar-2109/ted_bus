@@ -104,7 +104,11 @@
 
       <!-- ============ TRIPS TAB ============ -->
       <div *ngIf="selecteditem === 'trips'" class="animate-fadeIn">
-        <app-my-trip [booking]="mytrip"></app-my-trip>
+        <div *ngIf="loadingTrips" class="flex flex-col items-center justify-center py-20 text-slate-800 dark:text-slate-200">
+          <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600 mb-4"></div>
+          <p class="text-gray-400 text-sm animate-pulse">Loading your trips history...</p>
+        </div>
+        <app-my-trip *ngIf="!loadingTrips" [booking]="mytrip"></app-my-trip>
       </div>
 
       <!-- ============ PROFILE TAB ============ -->

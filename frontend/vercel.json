@@ -4,11 +4,11 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://redbus-backend-api.vercel.app/api/:path*"
+      "destination": "https://ted-bus-m13p.onrender.com/api/:path*"
     },
     {
       "source": "/health",
-      "destination": "https://redbus-backend-api.vercel.app/health"
+      "destination": "https://ted-bus-m13p.onrender.com/health"
     },
     {
       "source": "/(.*)",
