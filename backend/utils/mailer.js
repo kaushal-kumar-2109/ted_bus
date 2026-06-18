@@ -27,8 +27,8 @@ const transporter = nodemailer.createTransport({
  * @param {Object} options - { to, subject, text, html }
  */
 const sendEmail = async ({ to, subject, text, html, attachments }) => {
-  // 1. Resend HTTP API Fallback (Bypasses Render SMTP port block over port 443)
-  if (process.env.RESEND_API_KEY) {
+  const resendApiKey = process.env.RESEND_API || process.env.RESEND_API_KEY;
+  if (resendApiKey) {
     try {
       console.log("📨 Sending email via Resend HTTP API...");
       const resendPayload = {
@@ -45,7 +45,7 @@ const sendEmail = async ({ to, subject, text, html, attachments }) => {
       const response = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${process.env.RESEND_API_KEY}`,
+          "Authorization": `Bearer ${resendApiKey}`,
           "Content-Type": "application/json"
         },
         body: JSON.stringify(resendPayload)
