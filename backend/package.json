@@ -15,7 +15,13 @@
     "seed:all": "node seeds/busSeeder.js && node seeds/communitySeeder.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["redbus", "bus-booking", "express", "mongodb", "nodejs"],
+  "keywords": [
+    "redbus",
+    "bus-booking",
+    "express",
+    "mongodb",
+    "nodejs"
+  ],
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
@@ -33,6 +39,7 @@
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.7",
+    "pdfkit": "^0.19.1",
     "socket.io": "^4.7.2",
     "validator": "^13.11.0"
   },

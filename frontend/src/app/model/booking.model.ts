@@ -16,6 +16,7 @@ export interface Booking {
     businessDetails?: BusinessDetails;
     isInsurance?: boolean;
     isCovidDonated?: boolean;
+    type?: string;
   }
   
   interface Passenger {

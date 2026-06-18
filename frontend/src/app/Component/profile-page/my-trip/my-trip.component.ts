@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { LanguageService } from '../../../service/language.service';
 import { ReviewService } from '../../../service/review.service';
+import { url } from '../../../config';
 
 @Component({
   selector: 'app-my-trip',
@@ -106,6 +107,10 @@ export class MyTripComponent implements OnInit {
     this.selectedBooking = null;
   }
 
+  selectOverallRating(rating: number): void {
+    this.overallRating = rating;
+  }
+
   submitReview(): void {
     this.errorMessage = '';
     this.successMessage = '';
@@ -158,6 +163,14 @@ export class MyTripComponent implements OnInit {
           this.errorMessage = err.error?.message || 'Error submitting review';
         }
       });
+    }
+  }
+
+  downloadTicket(booking: any): void {
+    const bookingId = booking._id || booking.id;
+    if (bookingId) {
+      const downloadUrl = `${url}api/v1/bookings/${bookingId}/download`;
+      window.open(downloadUrl, '_blank');
     }
   }
 }

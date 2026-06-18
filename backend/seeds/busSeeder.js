@@ -175,7 +175,8 @@ function calcFare(distanceKm, busType, operatorTier) {
 async function seedBuses() {
   try {
     console.log("🔌 Connecting to MongoDB...");
-    await mongoose.connect(process.env.MONGODB_URI, {
+    const mongoUri = process.env.MONGODB_URI_SRV || process.env.MONGODB_URI;
+    await mongoose.connect(mongoUri, {
       dbName: process.env.DB_NAME || "redbus_clone",
     });
     console.log("✅ Connected to MongoDB");

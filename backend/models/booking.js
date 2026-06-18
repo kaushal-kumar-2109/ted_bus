@@ -200,6 +200,16 @@ const bookingSchema = new Schema(
       },
     },
 
+    // Metadata
+    metadata: {
+      type: {
+        type: String,
+        default: "bus"
+      },
+      isCovidDonated: Boolean,
+      duration: String
+    },
+
     // Timestamps
     createdAt: {
       type: Date,

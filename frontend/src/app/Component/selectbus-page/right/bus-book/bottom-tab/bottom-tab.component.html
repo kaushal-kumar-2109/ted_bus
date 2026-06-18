@@ -13,7 +13,65 @@
 
 <div class="displayArea" *ngIf="tabstate[0]">Amenities</div>
 <div class="displayArea" *ngIf="tabstate[1]"> Boarding and Droping Points</div>
-<div class="displayArea" *ngIf="tabstate[2]">Reviews</div>
+<div class="displayArea bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 rounded-xl p-5 mt-2 transition-colors duration-150" *ngIf="tabstate[2]">
+    <!-- Loading State -->
+    <div *ngIf="loadingReviews" class="text-center py-6">
+        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-red-650 mx-auto mb-2"></div>
+        <p class="text-xs text-gray-500 dark:text-slate-400">Loading reviews...</p>
+    </div>
+
+    <!-- Loaded Content -->
+    <div *ngIf="!loadingReviews">
+        <div class="flex flex-col md:flex-row gap-6 mb-4 pb-4 border-b border-gray-100 dark:border-slate-800">
+            <!-- Left Side stats -->
+            <div class="flex flex-col items-center justify-center md:pr-6 md:border-r border-gray-150 dark:border-slate-800 min-w-[150px]">
+                <div class="text-3xl font-extrabold text-slate-800 dark:text-white">{{avgrating}}</div>
+                <div class="flex gap-0.5 text-yellow-500 my-1 text-xs">
+                    <i *ngFor="let star of [1,2,3,4,5]" class="fa-star" [class.fa-solid]="star <= avgrating" [class.fa-regular]="star > avgrating"></i>
+                </div>
+                <span class="text-[10px] text-gray-400 dark:text-slate-500">Based on {{reviews.length}} reviews</span>
+            </div>
+
+            <!-- Stars breakdown -->
+            <div class="flex-1 space-y-1" *ngIf="ratingBreakdown">
+                <div *ngFor="let star of [5,4,3,2,1]" class="flex items-center gap-2 text-[10px] font-semibold text-slate-650 dark:text-slate-400">
+                    <span class="w-4">{{star}}★</span>
+                    <div class="flex-1 bg-gray-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-yellow-500 h-full rounded-full" [style.width.%]="reviews.length > 0 ? (ratingBreakdown[star] / reviews.length) * 100 : 0"></div>
+                    </div>
+                    <span class="w-8 text-right">({{ratingBreakdown[star] || 0}})</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty reviews state -->
+        <div *ngIf="reviews.length === 0" class="text-center py-4 text-xs text-gray-500 dark:text-slate-400">
+            No verified reviews posted for this bus yet.
+        </div>
+
+        <!-- Reviews list -->
+        <div class="space-y-3 max-h-[240px] overflow-y-auto pr-1" *ngIf="reviews.length > 0">
+            <div *ngFor="let r of reviews; let i = index" class="p-3 bg-slate-50 dark:bg-slate-900/40 border border-gray-100 dark:border-slate-800/80 rounded-lg text-xs space-y-1.5 shadow-sm">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="font-bold text-slate-700 dark:text-slate-200">{{r.userName}}</span>
+                            <span *ngIf="r.isVerified || r.user?.isProfileVerified" class="bg-yellow-100 dark:bg-yellow-950/20 text-yellow-800 dark:text-yellow-400 text-[8px] font-extrabold px-1 rounded flex items-center gap-0.5">
+                                <i class="fa-solid fa-circle-check text-[8px]"></i> Trusted
+                            </span>
+                        </div>
+                        <div class="flex gap-0.5 text-yellow-500 text-[9px] mt-0.5">
+                            <i *ngFor="let star of [1,2,3,4,5]" class="fa-star" [class.fa-solid]="star <= r.overallRating" [class.fa-regular]="star > r.overallRating"></i>
+                        </div>
+                    </div>
+                    <span class="text-[9px] text-gray-400 dark:text-slate-500">{{r.createdAt | date:'shortDate'}}</span>
+                </div>
+                <div class="font-bold text-slate-800 dark:text-white">{{r.title}}</div>
+                <p class="text-gray-600 dark:text-slate-350 leading-relaxed text-[11px] m-0">{{r.description}}</p>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="displayArea" *ngIf="tabstate[3]">Booking Policies</div>
 <div class="displayArea" *ngIf="tabstate[4]">
     <app-view-seats [filledseats]="filledseats" [seatprice]="seatprice" [routedetails]="routedetials" [busid]="busid"

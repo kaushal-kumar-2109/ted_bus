@@ -122,12 +122,29 @@ export class CommunityComponent implements OnInit {
     this.communityService.getPosts(this.selectedCategory, this.page, 10).subscribe({
       next: (res: any) => {
         this.loadingPosts = false;
+        let fetchedPosts = [];
         if (res?.success && res.data) {
-          this.posts = res.data;
+          fetchedPosts = res.data;
           this.totalPages = res.pagination?.pages || 1;
         } else if (res?.posts) {
-          this.posts = res.posts;
+          fetchedPosts = res.posts;
         }
+
+        // Initialize liked property on each post based on currentUser
+        if (this.currentUser) {
+          const currentUserId = this.currentUser._id || this.currentUser.id;
+          fetchedPosts.forEach((post: any) => {
+            post.liked = post.likes && post.likes.some((likeId: any) => {
+              const idStr = typeof likeId === 'object' && likeId !== null ? likeId._id || likeId : likeId;
+              return idStr ? idStr.toString() === currentUserId.toString() : false;
+            });
+          });
+        } else {
+          fetchedPosts.forEach((post: any) => {
+            post.liked = false;
+          });
+        }
+        this.posts = fetchedPosts;
       },
       error: (err) => {
         this.loadingPosts = false;
@@ -165,15 +182,44 @@ export class CommunityComponent implements OnInit {
     this.communityService.likePost(post._id).subscribe({
       next: (res: any) => {
         if (res?.success) {
-          post.likesCount = res.data.likesCount;
-          post.liked = res.data.liked;
+          // Handle backend response where fields are spread at the top level
+          const likesCount = res.likesCount !== undefined ? res.likesCount : (res.data?.likesCount !== undefined ? res.data.likesCount : post.likesCount);
+          const liked = res.liked !== undefined ? res.liked : (res.data?.liked !== undefined ? res.data.liked : !post.liked);
+          
+          post.likesCount = likesCount;
+          post.liked = liked;
+          
+          // Keep local likes array in sync so components are consistently stateful
+          if (this.currentUser) {
+            const currentUserId = this.currentUser._id || this.currentUser.id;
+            if (!post.likes) post.likes = [];
+            
+            const alreadyLiked = post.likes.some((likeId: any) => {
+              const idStr = typeof likeId === 'object' && likeId !== null ? likeId._id || likeId : likeId;
+              return idStr.toString() === currentUserId.toString();
+            });
+            
+            if (liked && !alreadyLiked) {
+              post.likes.push(currentUserId);
+            } else if (!liked && alreadyLiked) {
+              post.likes = post.likes.filter((likeId: any) => {
+                const idStr = typeof likeId === 'object' && likeId !== null ? likeId._id || likeId : likeId;
+                return idStr.toString() !== currentUserId.toString();
+              });
+            }
+          }
         } else {
           // Fallback UI toggle if data is structured differently
           post.liked = !post.liked;
           post.likesCount = post.liked ? post.likesCount + 1 : Math.max(0, post.likesCount - 1);
         }
       },
-      error: (err) => console.error('Error liking post', err)
+      error: (err) => {
+        console.error('Error liking post', err);
+        // Fallback UI toggle to keep UI interactive
+        post.liked = !post.liked;
+        post.likesCount = post.liked ? post.likesCount + 1 : Math.max(0, post.likesCount - 1);
+      }
     });
   }
 

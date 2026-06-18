@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { url } from '../config';
 
 @Injectable({
@@ -8,6 +8,7 @@ import { url } from '../config';
 })
 export class NotificationService {
   private baseApiUrl: string = url + 'api/v1/notifications';
+  public refreshNotifications$ = new Subject<void>();
 
   constructor(private http: HttpClient) {}
 
@@ -38,5 +39,9 @@ export class NotificationService {
 
   deleteNotification(id: string): Observable<any> {
     return this.http.delete<any>(`${this.baseApiUrl}/${id}`, this.getHeaders());
+  }
+
+  clearAllNotifications(): Observable<any> {
+    return this.http.delete<any>(`${this.baseApiUrl}/clear-all`, this.getHeaders());
   }
 }

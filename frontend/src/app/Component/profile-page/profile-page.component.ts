@@ -161,4 +161,17 @@ export class ProfilePageComponent implements OnInit{
   changeLanguage(langCode: string): void {
     this.lang.setLanguage(langCode);
   }
+
+  clearAllNotifications(): void {
+    this.notificationService.clearAllNotifications().subscribe({
+      next: (res: any) => {
+        this.notificationHistory = [];
+      },
+      error: (err) => {
+        console.error('Error clearing notifications', err);
+        // Fallback UI clear
+        this.notificationHistory = [];
+      }
+    });
+  }
 }

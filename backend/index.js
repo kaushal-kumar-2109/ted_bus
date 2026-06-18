@@ -49,12 +49,9 @@ app.use("/api", generalLimiter);
 // ─────────────────────────────────────────────
 // MongoDB Connection
 // ─────────────────────────────────────────────
+const mongoUri = process.env.MONGODB_URI_SRV || process.env.MONGODB_URI;
 mongoose
-  .connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    dbName: process.env.DB_NAME || "redbus_clone",
-  })
+  .connect(mongoUri)
   .then(() => console.log("✅ MongoDB connected"))
   .catch((err) => {
     console.error("❌ MongoDB connection failed:", err.message);

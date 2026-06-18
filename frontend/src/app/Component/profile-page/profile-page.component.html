@@ -171,7 +171,7 @@
           <h3 class="text-lg font-bold text-slate-800 dark:text-white m-0">Notifications</h3>
           <button *ngIf="notificationHistory.length > 0"
             class="text-xs text-red-600 dark:text-red-400 font-semibold hover:underline cursor-pointer bg-transparent border-none"
-            (click)="notificationHistory = []">Clear All</button>
+            (click)="clearAllNotifications()">Clear All</button>
         </div>
 
         <!-- Notification Preferences -->

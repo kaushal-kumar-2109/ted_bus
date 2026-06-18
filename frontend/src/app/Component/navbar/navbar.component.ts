@@ -45,6 +45,10 @@ export class NavbarComponent implements OnInit {
     } else {
       this.isloggedIn = false;
     }
+
+    this.notify.refreshNotifications$.subscribe(() => {
+      this.fetchNotifications();
+    });
   }
 
   fetchNotifications(): void {

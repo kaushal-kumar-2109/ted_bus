@@ -3,6 +3,7 @@ const router = express.Router();
 const Booking = require("../models/booking");
 const Bus = require("../models/bus");
 const User = require("../models/customer");
+const { downloadTicket, triggerSearchAbandonmentImmediate, triggerPaymentAbandonmentImmediate, confirmPayment } = require("../controller/booking");
 
 // Middleware
 const verifyToken = (req, res, next) => {
@@ -86,6 +87,14 @@ router.post("/", verifyToken, async (req, res) => {
 
     await booking.save();
 
+    // Auto-verify user on booking
+    await User.findByIdAndUpdate(req.userId, {
+      isProfileVerified: true,
+      canPostContent: true,
+      verificationStatus: "approved",
+      verificationBadge: "gold",
+    });
+
     // Update bus availability
     bus.availableSeats -= seats.length;
     await bus.save();
@@ -159,6 +168,14 @@ router.get("/:bookingId", async (req, res) => {
     });
   }
 });
+
+// Download Ticket PDF
+router.get("/:bookingId/download", downloadTicket);
+
+// Abandonment Tracking
+router.post("/abandonment/search", verifyToken, triggerSearchAbandonmentImmediate);
+router.post("/abandonment/payment", verifyToken, triggerPaymentAbandonmentImmediate);
+router.put("/:bookingId/confirm-payment", verifyToken, confirmPayment);
 
 // Update Booking Status
 router.put("/:bookingId/status", async (req, res) => {

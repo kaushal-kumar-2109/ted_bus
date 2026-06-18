@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Bus } from "../model/bus.model"
 import { url } from '../config';
@@ -33,7 +33,8 @@ addbusmongo(myBooking:any):Observable<Booking>{
     duration:myBooking.duration,
     isBusinessTravel:myBooking.isBusinessTravel,
     isInsurance: myBooking.isInsurance ,
-    isCovidDonated:myBooking.isCovidDonated
+    isCovidDonated:myBooking.isCovidDonated,
+    type: myBooking.type
   };
   return this.http.post<Booking>(this.busbookapi,busbook)
 }
@@ -41,6 +42,14 @@ addbusmongo(myBooking:any):Observable<Booking>{
 getbusmongo(id:string):Observable<Booking[]>{
   const url=`${this.busbookapi}${id}`;
   return this.http.get<Booking[]>(url);
+}
+
+confirmPayment(bookingId: string): Observable<any> {
+  const token = sessionStorage.getItem('token');
+  const headers = new HttpHeaders({
+    'Authorization': `Bearer ${token || ''}`
+  });
+  return this.http.put<any>(`${url}api/v1/bookings/${bookingId}/confirm-payment`, {}, { headers });
 }
 
 }
